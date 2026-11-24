@@ -136,11 +136,19 @@ function hostOpen(tries){
     if(err.type==="peer-unavailable")return;
     if(me.conn&&me.conn.open)return;
     netErr("PIN se nepodařilo vytvořit ("+(err.type||err)+"). Zkontroluj internet a zkus to znovu.")});
-  peer.on("connection",conn=>{
+  const accept=conn=>{
     if(O!==me)return;
-    if(me.conn&&me.conn.open&&me.conn.peer!==conn.peer){conn.on("open",()=>{try{conn.send({t:"full"})}catch(e){}setTimeout(()=>conn.close(),400)});return}
-    const old=me.conn;me.conn=conn;if(old&&old!==conn)try{old.close()}catch(e){}conn.on("data",d=>{if(O===me)onData(d)});conn.on("close",()=>{if(O===me&&me.conn===conn)lost()});
-  });
+    conn.on("data",d=>{
+      if(O!==me)return;
+      if(d&&d.t==="join"){
+        if(me.conn&&me.conn!==conn&&me.conn.open&&me.conn.peer!==conn.peer){try{conn.send({t:"full"})}catch(e){}setTimeout(()=>{try{conn.close()}catch(e){}},400);return}
+        const old=me.conn;me.conn=conn;if(old&&old!==conn)try{old.close()}catch(e){}
+      }
+      if(me.conn===conn)onData(d);
+    });
+    conn.on("close",()=>{if(O===me&&me.conn===conn)lost()});
+  };
+  peer.on("connection",accept);relayListen(peer,accept);
 }
 const duoLink=()=>location.origin+location.pathname+"#duo-"+O.pin;
 function hostWait(){
@@ -167,7 +175,7 @@ function joinNet(pin){
     if(peer.disconnected||!peer.open){setTimeout(attempt,1000);return}
     tries++;show();
     try{me.conn&&me.conn.close()}catch(e){}
-    const c=peer.connect(PREFIX+pin,{reliable:true});me.conn=c;
+    const c=connectAny(peer,PREFIX+pin,4000);me.conn=c;
     c.on("open",()=>c.send({t:"join",name:me.me}));
     c.on("data",d=>{if(O===me&&me.conn===c){clearTimeout(ct);onData(d)}});
     c.on("close",()=>{if(O===me&&me.conn===c&&me.ok)lost()});

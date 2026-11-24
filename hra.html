@@ -153,10 +153,12 @@ function hostOpen(tries){
     if(err.type==="unavailable-id"&&tries<3)return hostOpen(tries+1);
     app.innerHTML=`<div class="err">Hru se nepodařilo založit (${esc(err.type||err)}). Zkontroluj internet a zkus to znovu.</div><div class="row"><button class="wbtn" id="r">Zkusit znovu</button><button class="wbtn alt" id="b">Zpět</button></div>`;
     app.querySelector("#r").onclick=()=>hostOpen();app.querySelector("#b").onclick=lobby});
-  peer.on("connection",conn=>{
-    conn.on("data",d=>hostData(conn,d));
-    conn.on("close",()=>{const p=H.players[conn.peer];if(p){p.gone=true;if(H.phase==="lobby"){delete H.players[conn.peer];hostLobby()}}});
-  });
+  const accept=conn=>{
+    if(peer!==me)return;
+    conn.on("data",d=>{if(peer===me)hostData(conn,d)});
+    conn.on("close",()=>{const p=H.players[conn.peer];if(p&&p.conn===conn){p.gone=true;if(H.phase==="lobby"){delete H.players[conn.peer];hostLobby()}}});
+  };
+  peer.on("connection",accept);relayListen(peer,accept);
 }
 const link=()=>location.origin+location.pathname+"#pin-"+H.pin;
 function hostLobby(){
@@ -247,7 +249,7 @@ function joinConnect(pin,name){
     if(pr.disconnected||!pr.open){setTimeout(attempt,1000);return}
     tries++;show();
     try{me.conn&&me.conn.close()}catch(e){}
-    const conn=pr.connect(PREFIX+pin,{reliable:true});me.conn=conn;
+    const conn=connectAny(pr,PREFIX+pin,4000);me.conn=conn;
     conn.on("open",()=>conn.send({t:"join",name}));
     conn.on("data",d=>{if(me.conn===conn){clearTimeout(ct);playerData(d)}});
     conn.on("close",()=>{if(me.conn===conn&&me.ok&&me.phase!=="end")fail("")});

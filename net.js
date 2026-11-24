@@ -21,3 +21,45 @@
     }catch(e){}
   };
 })();
+/* Záložní cesta: když přímé spojení (WebRTC) neprojde přes síť, posílají se zprávy přes server PeerJS. */
+(function(){
+  const raw=(peer,dst,p)=>{try{peer.socket.send({type:"CANDIDATE",dst,payload:Object.assign({__r:1},p)})}catch(e){}};
+  const emitter=()=>{const h={};return{on(ev,fn){(h[ev]=h[ev]||[]).push(fn)},emit(ev,a){(h[ev]||[]).slice().forEach(f=>{try{f(a)}catch(e){console.error(e)}})}}};
+  // HOST: přijímá spojení přes server, onConn dostane objekt se stejným rozhraním jako DataConnection
+  window.relayListen=function(peer,onConn){
+    const conns=new Map();
+    const mk=src=>{const E=emitter();const c={peer:src,relay:true,open:true,
+      send:d=>raw(peer,src,{k:"d",d}),
+      close(){if(!c.open)return;c.open=false;conns.delete(src);raw(peer,src,{k:"bye"});E.emit("close")},
+      on(ev,fn){E.on(ev,fn);if(ev==="open"&&c.open)setTimeout(fn,0);return c},_E:E};return c};
+    peer.socket.on("message",m=>{
+      const p=m&&m.payload;if(!p||!p.__r||!m.src||peer.destroyed)return;
+      let c=conns.get(m.src);
+      if(p.k==="hello"){if(!c||!c.open){c=mk(m.src);conns.set(m.src,c);onConn(c)}raw(peer,m.src,{k:"ack"});return}
+      if(!c)return;
+      if(p.k==="d")c._E.emit("data",p.d);
+      else if(p.k==="bye"){c.open=false;conns.delete(m.src);c._E.emit("close")}
+    });
+  };
+  // HRÁČ: zkusí přímé spojení, po rtcWait ms přepne na server; vrací objekt jako DataConnection
+  window.connectAny=function(peer,dst,rtcWait){
+    const E=emitter();let done=false;
+    const w={peer:dst,open:false,via:null,
+      send(d){if(!w.open)return;w.via==="rtc"?rtc.send(d):raw(peer,dst,{k:"d",d})},
+      close(){if(done)return;done=true;const was=w.open&&w.via==="relay";w.open=false;try{rtc.close()}catch(e){}if(was)raw(peer,dst,{k:"bye"});try{peer.socket.removeListener("message",onMsg)}catch(e){}},
+      on(ev,fn){E.on(ev,fn);return w}};
+    const win=via=>{if(done||w.open)return;w.open=true;w.via=via;if(via==="relay"){try{rtc.close()}catch(e){}}E.emit("open")};
+    const rtc=peer.connect(dst,{reliable:true});
+    rtc.on("open",()=>{if(w.via!=="relay")win("rtc")});
+    rtc.on("data",d=>{if(!done&&w.via==="rtc")E.emit("data",d)});
+    rtc.on("close",()=>{if(!done&&w.via==="rtc"&&w.open){w.open=false;E.emit("close")}});
+    const onMsg=m=>{const p=m&&m.payload;if(done||!p||!p.__r||m.src!==dst)return;
+      if(p.k==="ack")win("relay");
+      else if(p.k==="d"&&w.via==="relay")E.emit("data",p.d);
+      else if(p.k==="bye"&&w.via==="relay"&&w.open){w.open=false;E.emit("close")}};
+    peer.socket.on("message",onMsg);
+    const hello=()=>{if(!done&&!w.open)raw(peer,dst,{k:"hello"})};
+    setTimeout(hello,rtcWait||4000);setTimeout(hello,(rtcWait||4000)+2500);
+    return w;
+  };
+})();
