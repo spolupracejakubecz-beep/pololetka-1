@@ -23,7 +23,10 @@
 })();
 /* Záložní cesta: když přímé spojení (WebRTC) neprojde přes síť, posílají se zprávy přes server PeerJS. */
 (function(){
-  const raw=(peer,dst,p)=>{try{peer.socket.send({type:"CANDIDATE",dst,payload:Object.assign({__r:1},p)})}catch(e){}};
+  // Veřejný server PeerJS předává jen zprávy ve tvaru ICE kandidáta, proto je tak „oblékáme“.
+  const RID="pp_relay";
+  const raw=(peer,dst,p)=>{try{peer.socket.send({type:"CANDIDATE",dst,payload:Object.assign({candidate:{candidate:"",sdpMLineIndex:0,sdpMid:"0"},type:"data",connectionId:RID,__r:1},p)})}catch(e){}};
+  const tidy=peer=>{try{peer._lostMessages&&peer._lostMessages.delete(RID)}catch(e){}};
   const emitter=()=>{const h={};return{on(ev,fn){(h[ev]=h[ev]||[]).push(fn)},emit(ev,a){(h[ev]||[]).slice().forEach(f=>{try{f(a)}catch(e){console.error(e)}})}}};
   // HOST: přijímá spojení přes server, onConn dostane objekt se stejným rozhraním jako DataConnection
   window.relayListen=function(peer,onConn){
@@ -33,7 +36,7 @@
       close(){if(!c.open)return;c.open=false;conns.delete(src);raw(peer,src,{k:"bye"});E.emit("close")},
       on(ev,fn){E.on(ev,fn);if(ev==="open"&&c.open)setTimeout(fn,0);return c},_E:E};return c};
     peer.socket.on("message",m=>{
-      const p=m&&m.payload;if(!p||!p.__r||!m.src||peer.destroyed)return;
+      const p=m&&m.payload;if(!p||!p.__r||!m.src||peer.destroyed)return;tidy(peer);
       let c=conns.get(m.src);
       if(p.k==="hello"){if(!c||!c.open){c=mk(m.src);conns.set(m.src,c);onConn(c)}raw(peer,m.src,{k:"ack"});return}
       if(!c)return;
@@ -53,7 +56,7 @@
     rtc.on("open",()=>{if(w.via!=="relay")win("rtc")});
     rtc.on("data",d=>{if(!done&&w.via==="rtc")E.emit("data",d)});
     rtc.on("close",()=>{if(!done&&w.via==="rtc"&&w.open){w.open=false;E.emit("close")}});
-    const onMsg=m=>{const p=m&&m.payload;if(done||!p||!p.__r||m.src!==dst)return;
+    const onMsg=m=>{const p=m&&m.payload;if(done||!p||!p.__r||m.src!==dst)return;tidy(peer);
       if(p.k==="ack")win("relay");
       else if(p.k==="d"&&w.via==="relay")E.emit("data",p.d);
       else if(p.k==="bye"&&w.via==="relay"&&w.open){w.open=false;E.emit("close")}};
