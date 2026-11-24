@@ -24,7 +24,7 @@
 .how ol{padding-left:1.2em;margin:0}.how li{margin:6px 0}
 @media(max-width:700px){.hero .in{grid-template-columns:1fr}.day{grid-template-columns:70px minmax(0,1fr)}.day .chk{grid-column:2}}
 </style></head><body>
-<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html" aria-current="page">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="hra.html">Hra</a></div></header>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html" aria-current="page">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="dvojice.html">Ve dvou</a><a class="l" href="hra.html">Hra</a></div></header>
 <section class="hero"><div class="in">
  <div><h1>Do 3. 12. to umíme</h1><p>Ekonomika, právo a účetnictví za 1. pololetí na jednom místě. Každý den jeden blok učiva, k němu trénink a jednou za čas hra se spolužáky.</p>
  <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn yel" id="goToday" href="ucivo.html">Dnešní učivo</a><a class="btn" style="background:rgba(255,255,255,.16)" href="hra.html">Hrát se spolužáky</a></div></div>
@@ -38,6 +38,7 @@
 <div class="card" style="margin-bottom:18px"><h2>Plán po dnech</h2><p class="mut" style="margin:0 0 6px">Ráno 25 minut učivo, pak 10 minut trénink ze stejného předmětu. Den se odškrtne sám, když máš přečtené jeho kapitoly; jinak si ho odškrtni ručně.</p><div id="plan"></div></div>
 <div class="card how"><h2>Jak se to naučit</h2><ol>
 <li><b>Přečti kapitolu</b> v Učivu a zaškrtni „Přečteno“.</li>
+<li><b>Ve dvou:</b> přečtěte si kapitolu oba a pak se na stránce Ve dvou střídejte. Jeden čte otázku i s možnostmi, druhý odpovídá.</li>
 <li><b>Hned ji procvič</b> v Tréninku (kvíz nebo kartičky jen z toho předmětu). Chyby se ukládají.</li>
 <li><b>Druhý den ráno</b> začni „Moje chyby“, než otevřeš novou kapitolu. Opakování druhý den drží učivo nejlíp.</li>
 <li><b>3. 12.</b> si dej Zkoušku nanečisto (30 otázek bez nápovědy) a doopakuj, co vyjde špatně.</li>
@@ -66,11 +67,11 @@ const done=p=>!!man[p[0]]||p[2].every(s=>rd[s]);
 function render(){
   document.getElementById("plan").innerHTML=PLAN.map(p=>{const cls=p[0]===today?"now":p[0]<today?"past":"";
     const tr=p[1]==="ALL"?'<a href="trenink.html#EXAM">Zkouška nanečisto</a> + <a href="trenink.html#WRONG">moje chyby</a>':'<a href="trenink.html#'+p[1]+'">trénink '+NM[p[1]].toLowerCase()+'</a>';
-    return '<div class="day '+cls+'"><div class="d">'+fmt(p[0])+'<small><span class="pill '+p[1]+'" style="'+(p[1]==="ALL"?"background:var(--brand)":"")+'">'+NM[p[1]]+'</span></small></div><div class="t">'+p[2].map(s=>'<a href="ucivo.html#'+s+'">'+SEC[s]+'</a>'+(rd[s]?' ✓':'')).join(", ")+'<br><span class="mut">pak '+tr+'</span></div><label class="chk"><input type="checkbox" data-d="'+p[0]+'" '+(done(p)?"checked":"")+'> Hotovo</label></div>'}).join("");
+    return '<div class="day '+cls+'"><div class="d">'+fmt(p[0])+'<small><span class="pill '+p[1]+'" style="'+(p[1]==="ALL"?"background:var(--brand)":"")+'">'+NM[p[1]]+'</span></small></div><div class="t">'+p[2].map(s=>'<a href="ucivo.html#'+s+'">'+SEC[s]+'</a>'+(rd[s]?' ✓':'')).join(", ")+'<br><span class="mut">pak '+tr+(p[1]==="ALL"?'':' · nebo <a href="dvojice.html#'+p[2][0]+'">ve dvou</a>')+'</span></div><label class="chk"><input type="checkbox" data-d="'+p[0]+'" '+(done(p)?"checked":"")+'> Hotovo</label></div>'}).join("");
   let t=PLAN.find(p=>p[0]===today)||PLAN.find(p=>!done(p))||PLAN[PLAN.length-1];
   const first=t[2].find(s=>!rd[s])||t[2][0];
   document.getElementById("goToday").href="ucivo.html#"+first;
-  document.getElementById("todayCard").innerHTML='<p class="mut" style="margin:0;font-weight:700">'+(t[0]===today?"Dnes":"Na řadě")+' · '+fmt(t[0])+'</p><h2 style="margin-top:4px">'+t[2].map(s=>SEC[s]).join(", ")+'</h2><p class="mut">'+(t[1]==="ALL"?"Velké opakování: zkouška nanečisto a pak jen chyby.":"Přečti si kapitoly a hned je procvič, dokud je máš v hlavě.")+'</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="ucivo.html#'+first+'">Číst</a><a class="btn ghost" href="trenink.html#'+(t[1]==="ALL"?"EXAM":t[1])+'">Trénovat</a></div>';
+  document.getElementById("todayCard").innerHTML='<p class="mut" style="margin:0;font-weight:700">'+(t[0]===today?"Dnes":"Na řadě")+' · '+fmt(t[0])+'</p><h2 style="margin-top:4px">'+t[2].map(s=>SEC[s]).join(", ")+'</h2><p class="mut">'+(t[1]==="ALL"?"Velké opakování: zkouška nanečisto a pak jen chyby.":"Přečti si kapitoly a hned je procvič, dokud je máš v hlavě.")+'</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="ucivo.html#'+first+'">Číst</a><a class="btn ghost" href="dvojice.html#'+first+'">Zkoušet se ve dvou</a><a class="btn ghost" href="trenink.html#'+(t[1]==="ALL"?"EXAM":t[1])+'">Trénovat</a></div>';
   document.getElementById("stats").innerHTML=["EKO","PRA","UCE"].map(s=>{const a=(stats[s]||[]).slice(-60),n=a.length,ok=a.filter(Boolean).length,p=n?Math.round(ok/n*100):0;
     return '<div class="stat"><span>'+NM[s]+'</span><div class="prog"><i style="width:'+p+'%;background:var(--'+s.toLowerCase()+')"></i></div><span style="text-align:right">'+(n?p+" %":"–")+'</span></div>'}).join("");
 }

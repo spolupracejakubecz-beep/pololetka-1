@@ -18,7 +18,7 @@ for p in parts:
         items.append((sid,h.strip()))
         hb=markdown.markdown(b, extensions=['tables'])
         hb=hb.replace('<table>','<div class="scroll"><table>').replace('</table>','</table></div>')
-        out.append(f'<section id="{sid}" class="sec"><div class="sh"><h3>{html.escape(h.strip())}</h3><label class="done"><input type="checkbox" data-sec="{sid}"> Přečteno</label></div>{hb}'+(f'<p class="pr"><a class="btn ghost" href="trenink.html#{code}">Procvičit {title.lower()}</a></p>' if code!='CHY' else '')+'</section>')
+        out.append(f'<section id="{sid}" class="sec"><div class="sh"><h3>{html.escape(h.strip())}</h3><label class="done"><input type="checkbox" data-sec="{sid}"> Přečteno</label></div>{hb}'+(f'<p class="pr" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="dvojice.html#{sid}">Zkoušet se ve dvou</a><a class="btn ghost" href="trenink.html#sec-{sid}">Procvičit kapitolu</a></p>' if code!='CHY' else '')+'</section>')
     if not items:
         sid=pre; items=[(sid,title)]
         out=[f'<section id="{sid}" class="sec"><div class="sh"><h3>{title}</h3><label class="done"><input type="checkbox" data-sec="{sid}"> Přečteno</label></div>'+markdown.markdown(body,extensions=['tables']).replace('<table>','<div class="scroll"><table>').replace('</table>','</table></div>')+'</section>']

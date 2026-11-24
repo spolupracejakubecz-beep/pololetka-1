@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ve dvou – Pololetka 1.P</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.steps span{font-weight:800;font-size:14px;padding:6px 12px;border-radius:999px;background:var(--line);color:var(--mut)}
+.steps span.on{background:var(--brand);color:#fff}
+.chs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.chs .g{display:flex;flex-direction:column;gap:6px}
+.ch{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;font:700 15px Montserrat,sans-serif;min-height:48px;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.ch small{color:var(--mut);font-weight:600;white-space:nowrap}
+.ch[aria-pressed=true]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--card))}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:560px}
+.who{display:flex;align-items:center;gap:12px;font-weight:800;font-size:clamp(18px,3vw,24px);margin-bottom:12px;flex-wrap:wrap}
+.who .arr{color:var(--mut)}
+.badge{background:var(--brand);color:#fff;border-radius:10px;padding:6px 12px}
+.badge.b2{background:#d89e00}
+.q{font-size:clamp(20px,3.4vw,28px);font-weight:800;line-height:1.25;margin:4px 0 16px;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;font:600 17px/1.35 Montserrat,sans-serif;min-height:56px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.opt b{flex:none;width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:15px}
+.opt:nth-child(1) b{background:#e21b3c}.opt:nth-child(2) b{background:#1368ce}.opt:nth-child(3) b{background:#d89e00}.opt:nth-child(4) b{background:#26890c}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.opt.peek{border-style:dashed;border-color:var(--ok)}
+.tip{background:color-mix(in srgb,var(--yel) 28%,transparent);border-radius:12px;padding:12px 16px;font-weight:600;margin-bottom:14px}
+.expl{margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--bg)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.score{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score div{background:var(--bg);border-radius:12px;padding:16px;text-align:center}
+.score b{display:block;font-size:clamp(40px,8vw,64px);line-height:1;font-weight:900}
+.miss{padding:10px 0;border-bottom:1px solid var(--line)}
+@media(max-width:520px){.names{grid-template-columns:1fr}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="dvojice.html" aria-current="page">Ve dvou</a><a class="l" href="hra.html">Hra</a></div></header>
+<div class="wrap" style="max-width:860px">
+<h1>Ve dvou</h1>
+<p class="sub">Oba si přečtete stejnou kapitolu, pak se střídáte: jeden čte otázku i s možnostmi, druhý odpovídá. Zkoušející vidí správnou odpověď a ťukne, co druhý řekl. Na konci rovnou trénink z té kapitoly.</p>
+<div class="steps" id="steps"><span>1. Kapitola</span><span>2. Čtení</span><span>3. Zkoušení</span><span>4. Výsledek a trénink</span></div>
+<div id="app"></div>
+</div>
+<script src="data.js"></script>
+<script>
+{
+const Q=window.Q,SECN=window.SECN;
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+const NM={eko:"Ekonomika",pra:"Právo",uce:"Účetnictví"};
+let cfg=Object.assign({a:"Honza",b:"",sec:"",per:5},store("duo_cfg")||{});
+let G=null;
+const step=n=>document.querySelectorAll("#steps span").forEach((s,i)=>s.classList.toggle("on",i===n-1));
+const count=sec=>Q.filter(q=>q[5]===sec).length;
+const hist=store("duo_hist")||{};
+function setup(){
+  step(1);
+  const groups=["eko","pra","uce"].map(g=>`<div class="g"><span class="pill ${g.toUpperCase()}" style="align-self:flex-start">${NM[g]}</span>${Object.keys(SECN).filter(k=>k.startsWith(g)).map(k=>`<button class="ch" data-sec="${k}" aria-pressed="${cfg.sec===k}"><span>${esc(SECN[k])}${hist[k]?' ✓':''}</span><small>${count(k)} otázek</small></button>`).join("")}</div>`).join("");
+  app.innerHTML=`<div class="card"><h2>Kdo hraje</h2><div class="names"><div><label class="mut" for="na" style="font-weight:700">První</label><input type="text" id="na" value="${esc(cfg.a)}" maxlength="20"></div><div><label class="mut" for="nb" style="font-weight:700">Druhý</label><input type="text" id="nb" value="${esc(cfg.b)}" maxlength="20" placeholder="Spolužák"></div></div>
+  <p class="mut" style="font-weight:700;margin:16px 0 6px">Otázek pro každého</p><div class="seg" id="per">${[3,5,8].map(n=>`<button data-n="${n}" aria-pressed="${cfg.per===n}">${n}</button>`).join("")}</div></div>
+  <h2 style="margin-top:22px">Vyberte kapitolu</h2><div class="chs" id="chs">${groups}</div>
+  <div class="row"><button class="btn" id="go" ${cfg.sec?"":"disabled style='opacity:.5'"}>Pokračovat${cfg.sec?": "+esc(SECN[cfg.sec]):""}</button></div>`;
+  const keep=()=>{cfg.a=app.querySelector("#na").value.trim()||"Hráč 1";cfg.b=app.querySelector("#nb").value.trim()||"Hráč 2";store("duo_cfg",cfg)};
+  app.querySelector("#per").onclick=e=>{const b=e.target.closest("button");if(b){keep();cfg.per=+b.dataset.n;store("duo_cfg",cfg);setup()}};
+  app.querySelector("#chs").onclick=e=>{const b=e.target.closest(".ch");if(b){keep();cfg.sec=b.dataset.sec;store("duo_cfg",cfg);setup();app.querySelector("#go").scrollIntoView({block:"center"})}};
+  app.querySelector("#go").onclick=()=>{keep();read()};
+}
+function read(){
+  step(2);
+  app.innerHTML=`<div class="card"><p class="mut" style="font-weight:700;margin:0">Kapitola</p><h2>${esc(SECN[cfg.sec])}</h2>
+  <p>Oba si teď kapitolu přečtěte. Nejlíp každý na svém zařízení, nebo jeden předčítá nahlas. Počítejte 10–15 minut a dávejte pozor na čísla, výčty a rozdíly mezi pojmy, na to se ptají otázky.</p>
+  <div class="row"><a class="btn ghost" href="ucivo.html#${cfg.sec}" target="_blank" rel="noopener">Otevřít kapitolu v nové záložce</a><button class="btn" id="go">Máme přečteno, jdeme zkoušet</button></div>
+  <div class="row"><button class="btn ghost" id="back">Zpět na výběr</button></div></div>`;
+  app.querySelector("#go").onclick=start;app.querySelector("#back").onclick=setup;
+}
+function start(){
+  const pool=shuf(Q.filter(q=>q[5]===cfg.sec));
+  const need=cfg.per*2;
+  let list=pool.slice(0,need);
+  if(list.length<need){const sub=cfg.sec.slice(0,3).toUpperCase();list=list.concat(shuf(Q.filter(q=>q[0]===sub&&q[5]!==cfg.sec)).slice(0,need-list.length))}
+  G={qs:list.map(q=>{const idx=shuf([0,1,2,3]);return{q:q[1],o:idx.map(i=>q[2][i]),c:idx.indexOf(q[3]),e:q[4],sec:q[5]}}),i:0,sc:[0,0],miss:[]};
+  ask();
+}
+function ask(){
+  step(3);
+  const x=G.qs[G.i],turn=G.i%2,ex=turn===0?cfg.a:cfg.b,an=turn===0?cfg.b:cfg.a;
+  app.innerHTML=`<div class="card"><div class="who"><span class="badge ${turn?"b2":""}">${esc(ex)}</span><span class="arr">zkouší</span><span class="badge ${turn?"":"b2"}">${esc(an)}</span><span class="mut" style="margin-left:auto;font-size:15px">${G.i+1} / ${G.qs.length}</span></div>
+  <div class="tip">${esc(ex)}, přečti otázku i všechny čtyři možnosti nahlas. ${esc(an)} odpoví a ty ťukni na možnost, kterou řekl${x.sec!==cfg.sec?" (otázka z jiné kapitoly stejného předmětu)":""}.</div>
+  <p class="q">${esc(x.q)}</p><div class="opts">${x.o.map((o,j)=>`<button class="opt" data-j="${j}"><b>${"ABCD"[j]}</b><span>${esc(o)}</span></button>`).join("")}</div>
+  <div class="row"><button class="btn ghost" id="peek">Ukázat správnou jen mně</button><button class="btn ghost" id="idk">Neví</button></div></div>`;
+  app.querySelector("#peek").onclick=e=>{const b=app.querySelectorAll(".opt")[x.c];b.classList.toggle("peek");e.target.textContent=b.classList.contains("peek")?"Skrýt správnou":"Ukázat správnou jen mně"};
+  app.querySelector("#idk").onclick=()=>judge(-1);
+  app.querySelector(".opts").onclick=e=>{const b=e.target.closest(".opt");if(b)judge(+b.dataset.j)};
+}
+function judge(j){
+  const x=G.qs[G.i],turn=G.i%2,an=turn===0?cfg.b:cfg.a,good=j===x.c;
+  if(good)G.sc[1-turn]++;else G.miss.push({who:an,x,j});
+  app.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;b.classList.remove("peek");if(k===x.c)b.classList.add("ok");else if(k===j)b.classList.add("bad")});
+  const last=G.i===G.qs.length-1,nx=G.i%2===0?cfg.b:cfg.a;
+  app.querySelector(".row").outerHTML=`<div class="expl"><strong style="color:${good?"var(--ok)":"var(--bad)"}">${good?esc(an)+" má pravdu.":"Správně je "+"ABCD"[x.c]+": "+esc(x.o[x.c])}</strong><br>${esc(x.e)}</div>
+  <div class="row"><button class="btn" id="nx">${last?"Výsledek":"Další: zkouší "+esc(nx)}</button></div>`;
+  const b=app.querySelector("#nx");b.focus();b.onclick=()=>{G.i++;G.i>=G.qs.length?result():ask()};
+}
+function result(){
+  step(4);hist[cfg.sec]=1;store("duo_hist",hist);
+  try{const rd=store("pp_read")||{};rd[cfg.sec]=true;store("pp_read",rd)}catch(e){}
+  const n=cfg.per;
+  app.innerHTML=`<div class="card"><h2>${esc(SECN[cfg.sec])}: výsledek</h2><div class="score"><div><span class="mut" style="font-weight:700">${esc(cfg.a)}</span><b>${G.sc[0]}/${Math.ceil(G.qs.length/2)}</b></div><div><span class="mut" style="font-weight:700">${esc(cfg.b)}</span><b>${G.sc[1]}/${Math.floor(G.qs.length/2)}</b></div></div>
+  ${G.miss.length?`<h2 style="margin-top:20px">Na tohle se podívejte znovu</h2>${G.miss.map(m=>`<div class="miss"><b>${esc(m.x.q)}</b><br><span class="mut">${esc(m.who)}:</span> <span style="color:var(--bad)">${m.j<0?"nevěděl":esc(m.x.o[m.j])}</span> · <span style="color:var(--ok)">správně ${esc(m.x.o[m.x.c])}</span><br><span class="mut">${esc(m.x.e)}</span></div>`).join("")}`:`<p style="margin-top:16px;font-weight:700">Bez chyby, výborně.</p>`}
+  <p style="margin-top:18px">Teď to hned protrénujte: každý si dá kvíz z téhle kapitoly na svém zařízení, nebo si spolu zahrajte hru.</p>
+  <div class="row"><a class="btn" href="trenink.html#sec-${cfg.sec}">Protrénovat kapitolu</a><a class="btn ghost" href="hra.html">Zahrát hru</a><button class="btn ghost" id="again">Znovu jiné otázky</button><button class="btn ghost" id="other">Jiná kapitola</button></div></div>`;
+  app.querySelector("#again").onclick=start;app.querySelector("#other").onclick=setup;
+}
+const h=location.hash.slice(1);
+if(SECN[h]){cfg.sec=h;store("duo_cfg",cfg);if(cfg.b)read();else setup()}else setup();
+window.addEventListener("hashchange",()=>{const k=location.hash.slice(1);if(SECN[k]){cfg.sec=k;setup()}});
+}
+</script></body></html>
