@@ -57,6 +57,7 @@ input[type=text]{color:#222;background:#fff;border:0}
 <div class="scr" id="app"></div>
 <script src="data.js"></script>
 <script src="vendor/peerjs.min.js"></script>
+<script src="net.js"></script>
 <script>
 {
 const Q=window.Q;
@@ -69,7 +70,7 @@ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const store=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
 let cfg=Object.assign({subj:"ALL",n:15,time:20,name:"",players:""},store("hk2_cfg")||{});
 let tick=null,peer=null;
-const stop=()=>{clearInterval(tick);if(peer){try{peer.destroy()}catch(e){}peer=null}};
+const stop=()=>{clearInterval(tick);if(peer){try{peer.destroy()}catch(e){}peer=null}wake(false)};
 const pts=(el,time,streak)=>Math.round(1000*(1-Math.min(el,time)/time/2))+Math.min(streak-1,5)*100;
 function makeQs(){
   const pool=Q.filter(q=>cfg.subj==="ALL"||q[0]===cfg.subj);
@@ -144,9 +145,12 @@ function hostOpen(tries){
   tries=tries||0;stop();const pin=String(100000+Math.floor(Math.random()*900000));
   app.innerHTML=`<div class="center"><div><p class="big2">Vytvářím hru…</p><p class="mut">Připojuji se k serveru pro hry.</p></div></div>`;
   H={pin,players:{},qs:makeQs(),i:-1,phase:"lobby",ans:{}};
-  peer=new Peer(PREFIX+pin,window.PEER_OPTS||{});
-  peer.on("open",hostLobby);
-  peer.on("error",err=>{if(err.type==="unavailable-id"&&tries<3)return hostOpen(tries+1);
+  peer=new Peer(PREFIX+pin,window.PEER_OPTS||{});const me=peer;wake(true);
+  keepAlive(peer,st=>{if(peer!==me)return;H.srv=st;const e=document.getElementById("srv");if(e)e.textContent=st==="reconnect"?"Obnovuji spojení se serverem… PIN zůstává stejný.":""});
+  peer.on("open",()=>{if(peer!==me)return;if(!H.opened){H.opened=true;hostLobby()}});
+  peer.on("error",err=>{if(peer!==me)return;
+    if(H.opened&&(isNetErr(err)||err.type==="unavailable-id"||err.type==="peer-unavailable"))return;
+    if(err.type==="unavailable-id"&&tries<3)return hostOpen(tries+1);
     app.innerHTML=`<div class="err">Hru se nepodařilo založit (${esc(err.type||err)}). Zkontroluj internet a zkus to znovu.</div><div class="row"><button class="wbtn" id="r">Zkusit znovu</button><button class="wbtn alt" id="b">Zpět</button></div>`;
     app.querySelector("#r").onclick=()=>hostOpen();app.querySelector("#b").onclick=lobby});
   peer.on("connection",conn=>{
@@ -160,7 +164,7 @@ function hostLobby(){
   const ps=Object.values(H.players);
   app.innerHTML=`<div class="top"><span class="tag">${NAME[cfg.subj]} · ${H.qs.length} otázek · ${cfg.time} s</span><button class="wbtn alt" id="x" style="min-height:44px;font-size:15px">Zrušit</button></div>
   <div class="panel" style="text-align:center;align-items:center"><p class="lbl" style="margin:0">Otevři tuhle stránku, klikni na <b>Připojit se</b> a zadej PIN</p><div class="pin">${H.pin.slice(0,3)} ${H.pin.slice(3)}</div>
-  <p class="mut" style="word-break:break-all">nebo otevři odkaz: <b style="color:#fff">${esc(link())}</b></p><button class="wbtn alt" id="cp" style="min-height:44px;font-size:15px">Zkopírovat odkaz</button></div>
+  <p class="mut" style="word-break:break-all">nebo otevři odkaz: <b style="color:#fff">${esc(link())}</b></p><button class="wbtn alt" id="cp" style="min-height:44px;font-size:15px">Zkopírovat odkaz</button><p class="mut" id="srv" style="margin:0;color:#ffd23f"></p><p class="mut" style="margin:0">Nech tuhle stránku otevřenou na obrazovce, jinak tě telefon uspí a ostatní tě nenajdou.</p></div>
   <div class="row" style="justify-content:space-between"><h2 style="margin:0;color:#fff">Hráči: ${ps.length}</h2><button class="wbtn" id="st" ${ps.length?"":"disabled style='opacity:.5'"}>Spustit hru</button></div>
   <div class="plist">${ps.map(p=>`<span>${esc(p.name)}</span>`).join("")||'<p class="mut">Čekám, až se někdo připojí…</p>'}</div>`;
   app.querySelector("#x").onclick=lobby;
@@ -172,7 +176,7 @@ const all=m=>Object.values(H.players).forEach(p=>send(p,m));
 function hostData(conn,d){
   if(!d||typeof d!=="object")return;
   if(d.t==="join"){
-    let name=String(d.name||"Hráč").slice(0,20).trim()||"Hráč";const taken=Object.values(H.players).some(p=>p.name===name&&p.conn!==conn);if(taken)name+=" "+(Object.keys(H.players).length+1);
+    let name=String(d.name||"Hráč").slice(0,20).trim()||"Hráč";const taken=Object.entries(H.players).some(([id,p])=>p.name===name&&id!==conn.peer);if(taken)name+=" "+(Object.keys(H.players).length+1);
     H.players[conn.peer]={name,score:0,streak:0,ok:0,conn};
     send(H.players[conn.peer],{t:"hi",name,phase:H.phase});
     if(H.phase==="lobby")hostLobby();
@@ -233,17 +237,28 @@ function joinForm(pin,msg){
     if(p.length!==6)return joinForm(p,"PIN má 6 číslic.");if(!n)return joinForm(p,"Napiš své jméno.");cfg.name=n;store("hk2_cfg",cfg);joinConnect(p,n)};
 }
 function joinConnect(pin,name){
-  stop();J={pin,name,score:0};
-  app.innerHTML=`<div class="center"><div><p class="big2">Připojuji…</p></div></div>`;
-  peer=new Peer(window.PEER_OPTS||{});
-  const fail=m=>{if(J&&J.ok&&J.phase!=="end")return joinForm(pin,"Spojení se hrou se přerušilo.");if(!J||!J.ok)joinForm(pin,m)};
-  const to=setTimeout(()=>{if(!J.ok)fail("Hru s tímhle PINem se nepodařilo najít. Zkontroluj PIN.")},12000);
-  peer.on("error",err=>{clearTimeout(to);fail(err.type==="peer-unavailable"?"Hra s tímhle PINem neexistuje nebo už skončila.":"Chyba spojení ("+(err.type||err)+").")});
-  peer.on("open",()=>{
-    const conn=peer.connect(PREFIX+pin,{reliable:true});J.conn=conn;
+  stop();J={pin,name,score:0};const me=J;let tries=0,ct=null;const MAX=8;
+  const show=()=>{app.innerHTML=`<div class="center"><div><p class="big2">Připojuji…</p><p class="mut">${tries>1?`Pokus ${tries} z ${MAX}. `:""}Ten, kdo hru založil, musí mít stránku otevřenou na obrazovce.</p></div></div>`};
+  show();
+  peer=new Peer(window.PEER_OPTS||{});const pr=peer;wake(true);keepAlive(pr);
+  const fail=m=>{if(J!==me)return;clearTimeout(ct);if(me.ok&&me.phase!=="end")return joinForm(pin,"Spojení se hrou se přerušilo. Zkus se připojit znovu stejným PINem.");if(!me.ok)joinForm(pin,m)};
+  const attempt=()=>{
+    if(J!==me||me.ok||peer!==pr)return;
+    if(pr.disconnected||!pr.open){setTimeout(attempt,1000);return}
+    tries++;show();
+    try{me.conn&&me.conn.close()}catch(e){}
+    const conn=pr.connect(PREFIX+pin,{reliable:true});me.conn=conn;
     conn.on("open",()=>conn.send({t:"join",name}));
-    conn.on("data",d=>{clearTimeout(to);playerData(d)});
-    conn.on("close",()=>fail("Hra skončila nebo se odpojila."));
+    conn.on("data",d=>{if(me.conn===conn){clearTimeout(ct);playerData(d)}});
+    conn.on("close",()=>{if(me.conn===conn&&me.ok&&me.phase!=="end")fail("")});
+    clearTimeout(ct);ct=setTimeout(()=>{if(J!==me||me.ok)return;tries<MAX?attempt():fail("PIN existuje, ale spojení mezi zařízeními se nepodařilo navázat. Zkuste stejnou wifi, nebo jeden přes mobilní data.")},9000);
+  };
+  pr.on("open",()=>{if(!me.started){me.started=true;attempt()}});
+  pr.on("error",err=>{
+    if(J!==me)return;
+    if(err.type==="peer-unavailable"){if(me.ok)return;clearTimeout(ct);if(tries<MAX)return void setTimeout(attempt,2500);return fail("Hru s tímhle PINem teď nikdo nemá otevřenou. Zkontroluj PIN a ať ten, kdo hru založil, má stránku otevřenou na obrazovce.")}
+    if(isNetErr(err))return;
+    fail("Chyba spojení ("+(err.type||err)+").");
   });
 }
 function playerData(d){
