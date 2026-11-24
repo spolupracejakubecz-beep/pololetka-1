@@ -1,0 +1,40 @@
+/* VOICE: povzbudivý trenažér před zkouškou, jasný a rychlý
+   IDEA: studijní deník + herní show (fialová Kahoot scéna)
+   PICTURE: odpočet do zkoušky a dnešní úkol jako velká karta
+   COLOUR: fialová #46178f, bílá, akcent žlutá #ffd23f; předměty petrolej/bordó/indigo
+   TYPE/LAYOUT: Montserrat; obsah max 1100px, navigace nahoře, na mobilu jeden sloupec */
+:root{color-scheme:light dark;--bg:light-dark(#f5f2fb,#16101f);--card:light-dark(#fff,#221a2f);--ink:light-dark(#1d1726,#f1ecf8);--mut:light-dark(#625a70,#b4aac4);--line:light-dark(#e3dcef,#362b46);--brand:#46178f;--yel:#ffd23f;--eko:#0d7680;--pra:#990f3d;--uce:#3d4db7;--ok:#1f8a3a;--bad:#c4183a;--acc:#46178f}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Montserrat,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+.nav{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff}
+.nav .in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:8px max(4vw,12px);overflow-x:auto}
+.nav .logo{font-weight:900;font-size:20px;margin-right:12px;text-decoration:none;white-space:nowrap}
+.nav .logo span{color:var(--yel)}
+.nav a.l{text-decoration:none;font-weight:700;font-size:15px;padding:10px 12px;border-radius:8px;white-space:nowrap}
+.nav a.l[aria-current=page],.nav a.l:hover{background:rgba(255,255,255,.16)}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(20px,4vw,44px) max(4vw,14px) 70px}
+h1{font-weight:900;font-size:clamp(30px,5vw,48px);line-height:1.05;margin:0 0 8px;text-wrap:balance}
+h2{font-weight:800;font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0 0 10px}
+.sub{color:var(--mut);margin:0 0 22px;max-width:70ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,28px)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:800 16px Montserrat,sans-serif;min-height:48px;padding:0 22px;border-radius:10px;border:0;background:var(--brand);color:#fff;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.yel{background:var(--yel);color:#2a1050}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+.pill{display:inline-block;font:700 13px Montserrat,sans-serif;color:#fff;border-radius:6px;padding:2px 9px}
+.EKO{background:var(--eko)}.PRA{background:var(--pra)}.UCE{background:var(--uce)}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.seg button{font:700 15px Montserrat,sans-serif;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.prog{height:8px;background:var(--line);border-radius:9px;overflow:hidden}.prog i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.mut{color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;background:color-mix(in srgb,var(--brand) 8%,transparent)}
+.scroll{overflow-x:auto}
+input[type=text]{font:700 18px Montserrat,sans-serif;min-height:52px;border-radius:10px;border:2px solid var(--line);padding:0 14px;background:var(--card);color:var(--ink);width:100%}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}}

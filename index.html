@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pololetka 1.P – plán</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.hero{background:var(--brand);color:#fff;padding:clamp(24px,5vw,56px) max(4vw,14px)}
+.hero .in{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:center}
+.hero h1{color:#fff}.hero p{opacity:.85;max-width:56ch;margin:0 0 18px}
+.cd{background:rgba(255,255,255,.1);border-radius:18px;padding:22px;text-align:center}
+.cd b{display:block;font-size:clamp(64px,12vw,120px);line-height:1;font-weight:900;color:var(--yel)}
+.cd span{font-weight:700}
+.today{border:3px solid var(--yel)}
+.day{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
+.day:last-child{border:0}
+.day .d{font-weight:800}.day .d small{display:block;font-weight:600;color:var(--mut)}
+.day .t a{font-weight:700}
+.day.now{background:color-mix(in srgb,var(--yel) 22%,transparent);border-radius:10px;padding-inline:10px}
+.day.past .d{color:var(--mut)}
+.chk{display:flex;gap:6px;align-items:center;font-weight:700;font-size:14px;color:var(--mut);cursor:pointer;min-height:44px}
+.chk input{width:22px;height:22px;accent-color:var(--ok)}
+.stat{display:grid;grid-template-columns:110px minmax(0,1fr) 64px;gap:10px;align-items:center;margin:10px 0;font-weight:700}
+.stat .prog{height:14px}
+.how ol{padding-left:1.2em;margin:0}.how li{margin:6px 0}
+@media(max-width:700px){.hero .in{grid-template-columns:1fr}.day{grid-template-columns:70px minmax(0,1fr)}.day .chk{grid-column:2}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html" aria-current="page">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="hra.html">Hra</a></div></header>
+<section class="hero"><div class="in">
+ <div><h1>Do 3. 12. to umíme</h1><p>Ekonomika, právo a účetnictví za 1. pololetí na jednom místě. Každý den jeden blok učiva, k němu trénink a jednou za čas hra se spolužáky.</p>
+ <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn yel" id="goToday" href="ucivo.html">Dnešní učivo</a><a class="btn" style="background:rgba(255,255,255,.16)" href="hra.html">Hrát se spolužáky</a></div></div>
+ <div class="cd"><b id="days">–</b><span id="dlabel">dní do zkoušky (4. 12.)</span></div>
+</div></section>
+<div class="wrap">
+<div class="grid2" style="margin-bottom:18px">
+ <div class="card today" id="todayCard"></div>
+ <div class="card"><h2>Jak jsi na tom</h2><p class="mut" style="margin:0 0 6px">Úspěšnost z tréninku (posledních 60 odpovědí v každém předmětu). Cíl na jedničku: 90 %.</p><div id="stats"></div><p style="margin:12px 0 0"><a class="btn ghost" href="trenink.html#WRONG">Projet moje chyby</a></p></div>
+</div>
+<div class="card" style="margin-bottom:18px"><h2>Plán po dnech</h2><p class="mut" style="margin:0 0 6px">Ráno 25 minut učivo, pak 10 minut trénink ze stejného předmětu. Den se odškrtne sám, když máš přečtené jeho kapitoly; jinak si ho odškrtni ručně.</p><div id="plan"></div></div>
+<div class="card how"><h2>Jak se to naučit</h2><ol>
+<li><b>Přečti kapitolu</b> v Učivu a zaškrtni „Přečteno“.</li>
+<li><b>Hned ji procvič</b> v Tréninku (kvíz nebo kartičky jen z toho předmětu). Chyby se ukládají.</li>
+<li><b>Druhý den ráno</b> začni „Moje chyby“, než otevřeš novou kapitolu. Opakování druhý den drží učivo nejlíp.</li>
+<li><b>3. 12.</b> si dej Zkoušku nanečisto (30 otázek bez nápovědy) a doopakuj, co vyjde špatně.</li>
+<li><b>Se spolužáky</b>: na stránce Hra založ hru, ukaž PIN a každý se připojí ze svého mobilu nebo počítače.</li>
+</ol><p class="mut" style="font-size:13px;margin:12px 0 0">Postup i chyby se ukládají jen v prohlížeči, kde se učíš.</p></div>
+</div>
+<script>
+{
+const SEC={"eko-1":"Základní pojmy","eko-2":"Výroba a výrobní faktory","eko-3":"Tržní ekonomika","eko-4":"Konkurence a soutěž","eko-5":"Podnikání a právní formy","eko-6":"Hospodaření podniku","eko-7":"Marketing","pra-1":"Pojem právo, právní řád","pra-2":"Právní normy","pra-3":"Stát","pra-4":"Ústavní právo","pra-5":"Soudnictví","pra-6":"Rodinné právo","uce-1":"Podstata účetnictví","uce-2":"Doklady a zásady","uce-3":"Daňová evidence","uce-4":"Majetek a rozvaha","uce-5":"Účty MD/Dal","uce-6":"DPH","uce-7":"Náklady a výnosy","chy":"Chytáky a čísla"};
+const PLAN=[
+["2026-11-24","UCE",["uce-1","uce-2"]],["2026-11-25","UCE",["uce-4","uce-5"]],["2026-11-26","UCE",["uce-3","uce-6","uce-7"]],
+["2026-11-27","EKO",["eko-1","eko-2"]],["2026-11-28","EKO",["eko-3","eko-4"]],["2026-11-29","EKO",["eko-5","eko-6","eko-7"]],
+["2026-11-30","PRA",["pra-1","pra-2","pra-3"]],["2026-12-01","PRA",["pra-4","pra-5"]],["2026-12-02","PRA",["pra-6"]],
+["2026-12-03","ALL",["chy"]]];
+const NM={EKO:"Ekonomika",PRA:"Právo",UCE:"Účetnictví",ALL:"Vše"};
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const rd=get("pp_read",{}),man=get("pp_days",{}),stats=get("pp_stats",{});
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=iso(new Date());
+const exam=new Date(2026,11,4),now=new Date();now.setHours(0,0,0,0);
+const dd=Math.round((exam-now)/864e5);
+document.getElementById("days").textContent=dd>0?dd:dd===0?"Dnes":"Hotovo";
+if(dd===1)document.getElementById("dlabel").textContent="den do zkoušky (4. 12.)";else if(dd>=2&&dd<=4)document.getElementById("dlabel").textContent="dny do zkoušky (4. 12.)";else if(dd<=0)document.getElementById("dlabel").textContent=dd===0?"zkouška je dnes, hodně štěstí":"zkouška proběhla";
+const fmt=s=>{const d=new Date(s+"T12:00");return ["Ne","Po","Út","St","Čt","Pá","So"][d.getDay()]+" "+d.getDate()+". "+(d.getMonth()+1)+"."};
+const done=p=>!!man[p[0]]||p[2].every(s=>rd[s]);
+function render(){
+  document.getElementById("plan").innerHTML=PLAN.map(p=>{const cls=p[0]===today?"now":p[0]<today?"past":"";
+    const tr=p[1]==="ALL"?'<a href="trenink.html#EXAM">Zkouška nanečisto</a> + <a href="trenink.html#WRONG">moje chyby</a>':'<a href="trenink.html#'+p[1]+'">trénink '+NM[p[1]].toLowerCase()+'</a>';
+    return '<div class="day '+cls+'"><div class="d">'+fmt(p[0])+'<small><span class="pill '+p[1]+'" style="'+(p[1]==="ALL"?"background:var(--brand)":"")+'">'+NM[p[1]]+'</span></small></div><div class="t">'+p[2].map(s=>'<a href="ucivo.html#'+s+'">'+SEC[s]+'</a>'+(rd[s]?' ✓':'')).join(", ")+'<br><span class="mut">pak '+tr+'</span></div><label class="chk"><input type="checkbox" data-d="'+p[0]+'" '+(done(p)?"checked":"")+'> Hotovo</label></div>'}).join("");
+  let t=PLAN.find(p=>p[0]===today)||PLAN.find(p=>!done(p))||PLAN[PLAN.length-1];
+  const first=t[2].find(s=>!rd[s])||t[2][0];
+  document.getElementById("goToday").href="ucivo.html#"+first;
+  document.getElementById("todayCard").innerHTML='<p class="mut" style="margin:0;font-weight:700">'+(t[0]===today?"Dnes":"Na řadě")+' · '+fmt(t[0])+'</p><h2 style="margin-top:4px">'+t[2].map(s=>SEC[s]).join(", ")+'</h2><p class="mut">'+(t[1]==="ALL"?"Velké opakování: zkouška nanečisto a pak jen chyby.":"Přečti si kapitoly a hned je procvič, dokud je máš v hlavě.")+'</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="ucivo.html#'+first+'">Číst</a><a class="btn ghost" href="trenink.html#'+(t[1]==="ALL"?"EXAM":t[1])+'">Trénovat</a></div>';
+  document.getElementById("stats").innerHTML=["EKO","PRA","UCE"].map(s=>{const a=(stats[s]||[]).slice(-60),n=a.length,ok=a.filter(Boolean).length,p=n?Math.round(ok/n*100):0;
+    return '<div class="stat"><span>'+NM[s]+'</span><div class="prog"><i style="width:'+p+'%;background:var(--'+s.toLowerCase()+')"></i></div><span style="text-align:right">'+(n?p+" %":"–")+'</span></div>'}).join("");
+}
+document.addEventListener("change",e=>{const b=e.target.closest("input[data-d]");if(!b)return;man[b.dataset.d]=b.checked;try{localStorage.setItem("pp_days",JSON.stringify(man))}catch(_){}render()});
+render();
+}
+</script></body></html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hra – Pololetka 1.P</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body{background:radial-gradient(circle at 20% 0,#5e2bb3,#381272 70%) fixed;color:#fff}
+.nav{background:rgba(0,0,0,.25)}
+.scr{max-width:1100px;margin:0 auto;padding:clamp(14px,3vw,28px);display:flex;flex-direction:column;gap:16px;min-height:calc(100vh - 60px)}
+h1{color:#fff}
+.logo2{font-weight:900;font-size:clamp(40px,8vw,76px);line-height:.95;margin:6px 0}.logo2 span{color:var(--yel)}
+.mut{color:rgba(255,255,255,.78)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.mode{border:0;border-radius:14px;padding:20px;text-align:left;color:#fff;cursor:pointer;font:600 15px/1.4 Montserrat,sans-serif;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);min-height:130px;display:flex;flex-direction:column;gap:6px}
+.mode b{font-size:22px;font-weight:900}
+.c0{background:#e21b3c}.c1{background:#1368ce}.c2{background:#d89e00}.c3{background:#26890c}
+.panel{background:rgba(255,255,255,.1);border-radius:16px;padding:clamp(16px,3vw,24px);display:flex;flex-direction:column;gap:14px}
+.seg button{background:rgba(255,255,255,.14);color:#fff;border-color:transparent}
+.seg button[aria-pressed=true]{background:#fff;color:#46178f}
+.lbl{font-weight:800;margin:0 0 6px}
+input[type=text]{color:#222;background:#fff;border:0}
+.wbtn{font:900 20px Montserrat,sans-serif;min-height:56px;padding:0 28px;border:0;border-radius:10px;background:#fff;color:#46178f;cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.15)}
+.wbtn.alt{background:rgba(255,255,255,.15);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800}
+.tag{background:rgba(0,0,0,.25);border-radius:999px;padding:6px 14px;white-space:nowrap}
+.qbox{background:#fff;color:#222;border-radius:10px;padding:clamp(16px,3vw,26px);font-weight:800;font-size:clamp(20px,3.6vw,34px);line-height:1.2;text-align:center;text-wrap:balance;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.mid{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:110px;flex:1}
+.timer{width:clamp(80px,14vw,120px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:clamp(30px,6vw,48px);background:conic-gradient(var(--yel) var(--p,100%),rgba(255,255,255,.15) 0);position:relative}
+.timer::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#46178f}.timer b{position:relative}
+.cnt{text-align:right;font-weight:800}.cnt b{display:block;font-size:40px;line-height:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.a{display:flex;align-items:center;gap:14px;min-height:clamp(70px,12vh,110px);padding:12px 16px;border:0;border-radius:8px;color:#fff;text-align:left;font:800 clamp(16px,2.2vw,22px)/1.2 Montserrat,sans-serif;cursor:pointer;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);transition:opacity .2s}
+.a svg{flex:none;width:clamp(26px,4vw,40px);height:auto}
+.a.dim{opacity:.25}.a.right{outline:5px solid #fff}
+.a .n{margin-left:auto;font-size:22px;font-weight:900}
+.res{border-radius:12px;padding:22px;text-align:center;font-weight:900;font-size:clamp(28px,5vw,44px)}
+.res.ok{background:#26890c}.res.no{background:#e21b3c}
+.res small{display:block;font-size:17px;font-weight:600;margin-top:8px;line-height:1.4}
+.pin{font-size:clamp(56px,12vw,110px);font-weight:900;letter-spacing:.06em;color:var(--yel);line-height:1}
+.plist{display:flex;flex-wrap:wrap;gap:8px}.plist span{background:#fff;color:#46178f;font-weight:800;border-radius:8px;padding:8px 14px}
+.lb{display:flex;flex-direction:column;gap:6px}
+.lb div{display:flex;justify-content:space-between;background:#fff;color:#46178f;font-weight:800;border-radius:8px;padding:10px 14px}
+.pod{display:flex;align-items:flex-end;justify-content:center;gap:10px;min-height:220px}
+.pod div{width:min(30%,170px);background:rgba(255,255,255,.16);border-radius:8px 8px 0 0;text-align:center;padding:10px 6px;font-weight:800;display:flex;flex-direction:column;gap:4px}
+.pod .p1{height:200px;background:var(--yel);color:#46178f}.pod .p2{height:150px}.pod .p3{height:110px}
+.pod em{font-style:normal;font-size:30px;font-weight:900}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:50vh}
+.pgrid .a{min-height:120px;justify-content:center}
+.pgrid .a svg{width:56px}
+.big2{font-size:clamp(28px,6vw,48px);font-weight:900;text-align:center;line-height:1.1}
+.center{flex:1;display:grid;place-items:center;text-align:center}
+.err{background:#e21b3c;border-radius:10px;padding:12px 16px;font-weight:700}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.a{min-height:62px}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="hra.html" aria-current="page">Hra</a></div></header>
+<div class="scr" id="app"></div>
+<script src="data.js"></script>
+<script src="vendor/peerjs.min.js"></script>
+<script>
+{
+const Q=window.Q;
+const NAME={ALL:"Vše",EKO:"Ekonomika",PRA:"Právo",UCE:"Účetnictví"};
+const SH=['<svg viewBox="0 0 40 40"><path d="M20 4 37 35H3z" fill="#fff"/></svg>','<svg viewBox="0 0 40 40"><path d="M20 2 38 20 20 38 2 20z" fill="#fff"/></svg>','<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fff"/></svg>','<svg viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" fill="#fff"/></svg>'];
+const PREFIX="pololetka1p-spektrum-";
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+let cfg=Object.assign({subj:"ALL",n:15,time:20,name:"",players:""},store("hk2_cfg")||{});
+let tick=null,peer=null;
+const stop=()=>{clearInterval(tick);if(peer){try{peer.destroy()}catch(e){}peer=null}};
+const pts=(el,time,streak)=>Math.round(1000*(1-Math.min(el,time)/time/2))+Math.min(streak-1,5)*100;
+function makeQs(){
+  const pool=Q.filter(q=>cfg.subj==="ALL"||q[0]===cfg.subj);
+  return shuf(pool).slice(0,cfg.n).map(q=>{const idx=shuf([0,1,2,3]);return{s:q[0],q:q[1],o:idx.map(i=>q[2][i]),c:idx.indexOf(q[3]),e:q[4]}});
+}
+function settings(){
+  return `<div><p class="lbl">Předmět</p><div class="seg" id="ps">${["ALL","EKO","PRA","UCE"].map(s=>`<button data-s="${s}" aria-pressed="${cfg.subj===s}">${NAME[s]}</button>`).join("")}</div></div>
+  <div class="row" style="gap:28px;align-items:flex-start"><div><p class="lbl">Počet otázek</p><div class="seg" id="pn">${[10,15,25,40].map(n=>`<button data-n="${n}" aria-pressed="${cfg.n===n}">${n}</button>`).join("")}</div></div>
+  <div><p class="lbl">Čas na otázku</p><div class="seg" id="pt">${[10,20,30].map(n=>`<button data-t="${n}" aria-pressed="${cfg.time===n}">${n} s</button>`).join("")}</div></div></div>`;
+}
+function bindSettings(redraw){
+  const seg=(id,f)=>{const el=app.querySelector(id);if(el)el.onclick=e=>{const b=e.target.closest("button");if(b){f(b);store("hk2_cfg",cfg);redraw()}}};
+  seg("#ps",b=>cfg.subj=b.dataset.s);seg("#pn",b=>cfg.n=+b.dataset.n);seg("#pt",b=>cfg.time=+b.dataset.t);
+}
+/* ---------- LOBBY ---------- */
+function lobby(){
+  stop();history.replaceState(null,"",location.pathname);
+  app.innerHTML=`<div class="logo2">Pololetka<span>!</span></div><p class="mut" style="max-width:60ch">Kvízová hra jako Kahoot z učiva 1.P. Hraj sám, nebo založ hru: na velké obrazovce běží otázky a každý odpovídá ze svého mobilu nebo počítače.</p>
+  <div class="modes"><button class="mode c1" id="mHost"><b>Založit hru</b>Pro třídu nebo partu. Ukážeš PIN, ostatní se připojí.</button>
+  <button class="mode c3" id="mJoin"><b>Připojit se</b>Máš PIN od kamaráda? Zadej ho a hraj ze svého zařízení.</button>
+  <button class="mode c0" id="mSolo"><b>Hrát sám</b>Rychlý trénink na čas. Můžete se i střídat u jednoho zařízení.</button></div>`;
+  app.querySelector("#mHost").onclick=hostSetup;app.querySelector("#mJoin").onclick=()=>joinForm("");app.querySelector("#mSolo").onclick=soloSetup;
+}
+/* ---------- SOLO (+ střídání u jednoho zařízení) ---------- */
+let S=null;
+function soloSetup(){
+  app.innerHTML=`<h1>Hrát sám</h1><div class="panel">${settings()}<div style="max-width:420px"><p class="lbl">Hráči (víc jmen oddělených čárkou = střídání)</p><input type="text" id="pl" value="${esc(cfg.players||cfg.name||"")}" placeholder="Honza" autocomplete="off"></div>
+  <div class="row"><button class="wbtn" id="go">Hrát</button><button class="wbtn alt" id="back">Zpět</button></div></div>`;
+  const keep=()=>{cfg.players=app.querySelector("#pl").value;store("hk2_cfg",cfg)};
+  bindSettings(()=>{keep();soloSetup()});app.querySelector("#back").onclick=lobby;
+  app.querySelector("#go").onclick=()=>{keep();const names=cfg.players.split(",").map(s=>s.trim()).filter(Boolean).slice(0,8);
+    S={qs:makeQs(),i:0,p:0,pl:(names.length?names:["Hráč"]).map(n=>({name:n,score:0,streak:0,ok:0}))};soloReady()};
+}
+function soloReady(){
+  if(S.pl.length<2)return soloAsk();
+  app.innerHTML=`<div class="top"><span class="tag">Otázka ${S.i+1} / ${S.qs.length}</span></div><div class="center"><div><p class="mut" style="font-weight:800">Na tahu je</p><h1 style="margin:10px 0 24px">${esc(S.pl[S.p].name)}</h1><button class="wbtn" id="go">Jsem připraven</button></div></div>`;
+  app.querySelector("#go").onclick=soloAsk;
+}
+function soloAsk(){
+  const x=S.qs[S.i],pl=S.pl[S.p];let left=cfg.time*10;const t0=performance.now();S.done=false;
+  app.innerHTML=`<div class="top"><span class="tag">${S.i+1} / ${S.qs.length}</span><span class="tag">${esc(pl.name)} · ${pl.score} b</span></div><div class="qbox">${esc(x.q)}</div>
+  <div class="mid" id="mid"><div class="timer" id="tm"><b id="tn">${cfg.time}</b></div><div class="cnt">${NAME[x.s]}<br><span class="mut" style="font-size:14px">klávesy 1–4</span></div></div>
+  <div class="grid">${x.o.map((o,j)=>`<button class="a c${j}" data-j="${j}">${SH[j]}<span>${esc(o)}</span></button>`).join("")}</div>`;
+  const pick=j=>{if(S.done)return;S.done=true;clearInterval(tick);const good=j===x.c,el=(performance.now()-t0)/1000;let p=0;
+    if(good){pl.streak++;pl.ok++;p=pts(el,cfg.time,pl.streak);pl.score+=p}else pl.streak=0;
+    app.querySelectorAll(".a").forEach((b,k)=>{b.disabled=true;b.classList.add(k===x.c?"right":"dim")});
+    const last=S.p===S.pl.length-1&&S.i===S.qs.length-1;
+    app.querySelector("#mid").outerHTML=`<div><div class="res ${good?"ok":"no"}">${good?"Správně! +"+p:j<0?"Čas vypršel":"Špatně"}<small>${good?"":"Správně: "+esc(x.o[x.c])+"<br>"}${esc(x.e)}</small></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="wbtn" id="nx">${last?"Výsledky":"Další"}</button></div></div>`;
+    const nx=app.querySelector("#nx");nx.focus();nx.onclick=()=>{S.p++;if(S.p>=S.pl.length){S.p=0;S.i++}if(S.i>=S.qs.length)return podium(S.pl.map(p=>({name:p.name,score:p.score,ok:p.ok})),S.qs.length,soloSetup);soloReady()}};
+  S.pick=pick;
+  app.querySelector(".grid").onclick=e=>{const b=e.target.closest(".a");if(b)pick(+b.dataset.j)};
+  const tm=app.querySelector("#tm"),tn=app.querySelector("#tn");
+  clearInterval(tick);tick=setInterval(()=>{left--;tm.style.setProperty("--p",left/(cfg.time*10)*100+"%");tn.textContent=Math.ceil(left/10);if(left<=0)pick(-1)},100);
+}
+document.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key>="1"&&e.key<="4"){if(S&&S.pick&&!S.done&&app.querySelector(".grid .a:not(:disabled)")){e.preventDefault();S.pick(+e.key-1)}else if(J&&J.answer&&app.querySelector(".pgrid .a:not(:disabled)")){e.preventDefault();J.answer(+e.key-1)}}});
+function podium(list,n,again){
+  stop();const r=list.slice().sort((a,b)=>b.score-a.score),top=[r[1],r[0],r[2]],cls=["p2","p1","p3"],pl=["2.","1.","3."];
+  app.innerHTML=`<h1>Výsledky</h1><div class="pod">${top.map((p,i)=>p?`<div class="${cls[i]}"><em>${pl[i]}</em>${esc(p.name)}<span>${p.score} b</span><span style="font-weight:600;font-size:13px">${p.ok}/${n} správně</span></div>`:"").join("")}</div>
+  ${r.length>3?`<div class="lb">${r.slice(3).map((p,i)=>`<div><span>${i+4}. ${esc(p.name)}</span><span>${p.score} b · ${p.ok}/${n}</span></div>`).join("")}</div>`:""}
+  <p class="mut">Na jedničku u zkoušky potřebuješ aspoň 90 % správně, na čtyřku 45 %.</p>
+  <div class="row"><button class="wbtn" id="again">Hrát znovu</button><button class="wbtn alt" id="home">Hlavní menu</button></div>`;
+  app.querySelector("#again").onclick=again;app.querySelector("#home").onclick=lobby;
+}
+/* ---------- HOST ---------- */
+let H=null;
+function hostSetup(){
+  stop();
+  app.innerHTML=`<h1>Založit hru</h1><div class="panel">${settings()}<div class="row"><button class="wbtn" id="go">Vytvořit PIN</button><button class="wbtn alt" id="back">Zpět</button></div></div>`;
+  bindSettings(hostSetup);app.querySelector("#back").onclick=lobby;app.querySelector("#go").onclick=hostOpen;
+}
+function hostOpen(tries){
+  tries=tries||0;stop();const pin=String(100000+Math.floor(Math.random()*900000));
+  app.innerHTML=`<div class="center"><div><p class="big2">Vytvářím hru…</p><p class="mut">Připojuji se k serveru pro hry.</p></div></div>`;
+  H={pin,players:{},qs:makeQs(),i:-1,phase:"lobby",ans:{}};
+  peer=new Peer(PREFIX+pin,window.PEER_OPTS||{});
+  peer.on("open",hostLobby);
+  peer.on("error",err=>{if(err.type==="unavailable-id"&&tries<3)return hostOpen(tries+1);
+    app.innerHTML=`<div class="err">Hru se nepodařilo založit (${esc(err.type||err)}). Zkontroluj internet a zkus to znovu.</div><div class="row"><button class="wbtn" id="r">Zkusit znovu</button><button class="wbtn alt" id="b">Zpět</button></div>`;
+    app.querySelector("#r").onclick=()=>hostOpen();app.querySelector("#b").onclick=lobby});
+  peer.on("connection",conn=>{
+    conn.on("data",d=>hostData(conn,d));
+    conn.on("close",()=>{const p=H.players[conn.peer];if(p){p.gone=true;if(H.phase==="lobby"){delete H.players[conn.peer];hostLobby()}}});
+  });
+}
+const link=()=>location.origin+location.pathname+"#pin-"+H.pin;
+function hostLobby(){
+  if(H.phase!=="lobby")return;
+  const ps=Object.values(H.players);
+  app.innerHTML=`<div class="top"><span class="tag">${NAME[cfg.subj]} · ${H.qs.length} otázek · ${cfg.time} s</span><button class="wbtn alt" id="x" style="min-height:44px;font-size:15px">Zrušit</button></div>
+  <div class="panel" style="text-align:center;align-items:center"><p class="lbl" style="margin:0">Otevři tuhle stránku, klikni na <b>Připojit se</b> a zadej PIN</p><div class="pin">${H.pin.slice(0,3)} ${H.pin.slice(3)}</div>
+  <p class="mut" style="word-break:break-all">nebo otevři odkaz: <b style="color:#fff">${esc(link())}</b></p><button class="wbtn alt" id="cp" style="min-height:44px;font-size:15px">Zkopírovat odkaz</button></div>
+  <div class="row" style="justify-content:space-between"><h2 style="margin:0;color:#fff">Hráči: ${ps.length}</h2><button class="wbtn" id="st" ${ps.length?"":"disabled style='opacity:.5'"}>Spustit hru</button></div>
+  <div class="plist">${ps.map(p=>`<span>${esc(p.name)}</span>`).join("")||'<p class="mut">Čekám, až se někdo připojí…</p>'}</div>`;
+  app.querySelector("#x").onclick=lobby;
+  app.querySelector("#cp").onclick=async e=>{try{await navigator.clipboard.writeText(link());e.target.textContent="Zkopírováno"}catch(_){e.target.textContent="Zkopíruj odkaz ručně"}};
+  app.querySelector("#st").onclick=()=>{if(Object.keys(H.players).length)hostNext()};
+}
+const send=(p,m)=>{try{if(!p.gone)p.conn.send(m)}catch(e){}};
+const all=m=>Object.values(H.players).forEach(p=>send(p,m));
+function hostData(conn,d){
+  if(!d||typeof d!=="object")return;
+  if(d.t==="join"){
+    let name=String(d.name||"Hráč").slice(0,20).trim()||"Hráč";const taken=Object.values(H.players).some(p=>p.name===name&&p.conn!==conn);if(taken)name+=" "+(Object.keys(H.players).length+1);
+    H.players[conn.peer]={name,score:0,streak:0,ok:0,conn};
+    send(H.players[conn.peer],{t:"hi",name,phase:H.phase});
+    if(H.phase==="lobby")hostLobby();
+  }else if(d.t==="a"&&H.phase==="q"&&d.i===H.i){
+    const p=H.players[conn.peer];if(!p||H.ans[conn.peer])return;
+    H.ans[conn.peer]={j:+d.j,el:(performance.now()-H.t0)/1000};
+    const n=Object.keys(H.ans).length,tot=Object.values(H.players).filter(p=>!p.gone).length;
+    const c=app.querySelector("#ac");if(c)c.textContent=n;
+    if(n>=tot)hostReveal();
+  }
+}
+function hostNext(){
+  H.i++;if(H.i>=H.qs.length)return hostEnd();
+  const x=H.qs[H.i];H.phase="q";H.ans={};H.t0=performance.now();let left=cfg.time*10;
+  all({t:"q",i:H.i,n:H.qs.length,q:x.q,o:x.o,s:x.s,time:cfg.time});
+  app.innerHTML=`<div class="top"><span class="tag">${H.i+1} / ${H.qs.length}</span><span class="tag">PIN ${H.pin}</span></div><div class="qbox">${esc(x.q)}</div>
+  <div class="mid"><div class="timer" id="tm"><b id="tn">${cfg.time}</b></div><div class="cnt"><b id="ac">0</b>odpovědí</div></div>
+  <div class="grid">${x.o.map((o,j)=>`<div class="a c${j}">${SH[j]}<span>${esc(o)}</span></div>`).join("")}</div>
+  <div class="row" style="justify-content:flex-end"><button class="wbtn alt" id="sk" style="min-height:44px;font-size:15px">Ukončit odpovídání</button></div>`;
+  app.querySelector("#sk").onclick=hostReveal;
+  const tm=app.querySelector("#tm"),tn=app.querySelector("#tn");
+  clearInterval(tick);tick=setInterval(()=>{left--;tm.style.setProperty("--p",left/(cfg.time*10)*100+"%");tn.textContent=Math.max(0,Math.ceil(left/10));if(left<=0)hostReveal()},100);
+}
+function hostReveal(){
+  if(H.phase!=="q")return;H.phase="r";clearInterval(tick);
+  const x=H.qs[H.i],cnt=[0,0,0,0];
+  for(const [id,p] of Object.entries(H.players)){
+    const a=H.ans[id];let got=0,good=false;
+    if(a){cnt[a.j]=(cnt[a.j]||0)+1;good=a.j===x.c}
+    if(good){p.streak++;p.ok++;got=pts(a.el,cfg.time,p.streak);p.score+=got}else p.streak=0;
+    p.last={good,got,answered:!!a};
+  }
+  const rank=Object.values(H.players).sort((a,b)=>b.score-a.score);
+  rank.forEach((p,i)=>send(p,{t:"r",good:p.last.good,answered:p.last.answered,got:p.last.got,score:p.score,rank:i+1,of:rank.length,correct:x.o[x.c],e:x.e}));
+  const last=H.i===H.qs.length-1;
+  app.innerHTML=`<div class="top"><span class="tag">${H.i+1} / ${H.qs.length}</span><span class="tag">PIN ${H.pin}</span></div><div class="qbox">${esc(x.q)}</div>
+  <div class="grid">${x.o.map((o,j)=>`<div class="a c${j} ${j===x.c?"right":"dim"}">${SH[j]}<span>${esc(o)}</span><span class="n">${cnt[j]}</span></div>`).join("")}</div>
+  <p style="margin:0;font-weight:600">${esc(x.e)}</p>
+  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="lb" style="flex:1;min-width:240px">${rank.slice(0,5).map((p,i)=>`<div><span>${i+1}. ${esc(p.name)}</span><span>${p.score}</span></div>`).join("")}</div><button class="wbtn" id="nx">${last?"Výsledky":"Další otázka"}</button></div>`;
+  app.querySelector("#nx").onclick=hostNext;
+}
+function hostEnd(){
+  H.phase="end";const r=Object.values(H.players).sort((a,b)=>b.score-a.score);
+  r.forEach((p,i)=>send(p,{t:"end",rank:i+1,of:r.length,score:p.score,ok:p.ok,n:H.qs.length}));
+  const list=r.map(p=>({name:p.name,score:p.score,ok:p.ok}));
+  setTimeout(()=>podium(list,H.qs.length,hostSetup),300);
+}
+/* ---------- PLAYER ---------- */
+let J=null;
+function joinForm(pin,msg){
+  stop();
+  app.innerHTML=`<h1>Připojit se ke hře</h1>${msg?`<div class="err">${esc(msg)}</div>`:""}<form class="panel" id="f" style="max-width:460px"><div><p class="lbl">PIN hry</p><input type="text" id="pin" inputmode="numeric" maxlength="7" value="${esc(pin)}" placeholder="123 456" autocomplete="off"></div>
+  <div><p class="lbl">Tvoje jméno</p><input type="text" id="nm" maxlength="20" value="${esc(cfg.name)}" placeholder="Honza" autocomplete="off"></div>
+  <div class="row"><button class="wbtn" type="submit">Připojit</button><button class="wbtn alt" type="button" id="back">Zpět</button></div></form>`;
+  app.querySelector("#back").onclick=lobby;
+  app.querySelector(pin?"#nm":"#pin").focus();
+  app.querySelector("#f").onsubmit=e=>{e.preventDefault();const p=app.querySelector("#pin").value.replace(/\D/g,""),n=app.querySelector("#nm").value.trim();
+    if(p.length!==6)return joinForm(p,"PIN má 6 číslic.");if(!n)return joinForm(p,"Napiš své jméno.");cfg.name=n;store("hk2_cfg",cfg);joinConnect(p,n)};
+}
+function joinConnect(pin,name){
+  stop();J={pin,name,score:0};
+  app.innerHTML=`<div class="center"><div><p class="big2">Připojuji…</p></div></div>`;
+  peer=new Peer(window.PEER_OPTS||{});
+  const fail=m=>{if(J&&J.ok&&J.phase!=="end")return joinForm(pin,"Spojení se hrou se přerušilo.");if(!J||!J.ok)joinForm(pin,m)};
+  const to=setTimeout(()=>{if(!J.ok)fail("Hru s tímhle PINem se nepodařilo najít. Zkontroluj PIN.")},12000);
+  peer.on("error",err=>{clearTimeout(to);fail(err.type==="peer-unavailable"?"Hra s tímhle PINem neexistuje nebo už skončila.":"Chyba spojení ("+(err.type||err)+").")});
+  peer.on("open",()=>{
+    const conn=peer.connect(PREFIX+pin,{reliable:true});J.conn=conn;
+    conn.on("open",()=>conn.send({t:"join",name}));
+    conn.on("data",d=>{clearTimeout(to);playerData(d)});
+    conn.on("close",()=>fail("Hra skončila nebo se odpojila."));
+  });
+}
+function playerData(d){
+  if(!d||typeof d!=="object")return;
+  if(d.t==="hi"){J.ok=true;J.name=d.name;app.innerHTML=`<div class="top"><span class="tag">PIN ${J.pin}</span><span class="tag">${esc(J.name)}</span></div><div class="center"><div><p class="big2">Jsi ve hře!</p><p class="mut">Sleduj velkou obrazovku. Otázka se objeví i tady.</p></div></div>`}
+  else if(d.t==="q"){
+    J.phase="q";J.i=d.i;const t0=performance.now();
+    app.innerHTML=`<div class="top"><span class="tag">${d.i+1} / ${d.n}</span><span class="tag">${esc(J.name)} · ${J.score} b</span></div><div class="qbox" style="font-size:clamp(18px,3vw,26px)">${esc(d.q)}</div>
+    <div class="pgrid">${d.o.map((o,j)=>`<button class="a c${j}" data-j="${j}">${SH[j]}<span>${esc(o)}</span></button>`).join("")}</div>`;
+    J.answer=j=>{if(J.phase!=="q")return;J.phase="sent";try{J.conn.send({t:"a",i:d.i,j})}catch(e){}
+      app.querySelectorAll(".pgrid .a").forEach((b,k)=>{b.disabled=true;if(k!==j)b.classList.add("dim")});
+      app.querySelector(".pgrid").insertAdjacentHTML("afterend",`<p class="big2" style="font-size:24px">Odesláno, čekáme na ostatní…</p>`)};
+    app.querySelector(".pgrid").onclick=e=>{const b=e.target.closest(".a");if(b)J.answer(+b.dataset.j)};
+  }else if(d.t==="r"){
+    J.phase="r";J.score=d.score;
+    app.innerHTML=`<div class="top"><span class="tag">${esc(J.name)}</span><span class="tag">${d.score} b</span></div><div class="res ${d.good?"ok":"no"}">${d.good?"Správně! +"+d.got:d.answered?"Špatně":"Nestihl jsi to"}<small>${d.good?"":"Správně: "+esc(d.correct)+"<br>"}${esc(d.e)}</small></div><p class="big2" style="font-size:28px">${d.rank}. místo z ${d.of}</p>`;
+  }else if(d.t==="end"){
+    J.phase="end";
+    app.innerHTML=`<div class="center"><div><p class="mut" style="font-weight:800">Konec hry</p><p class="pin">${d.rank}.</p><p class="big2">místo z ${d.of}</p><p class="mut" style="margin-top:10px">${d.score} bodů · ${d.ok}/${d.n} správně</p><div class="row" style="justify-content:center;margin-top:18px"><button class="wbtn" id="home">Hlavní menu</button></div></div></div>`;
+    app.querySelector("#home").onclick=lobby;
+  }
+}
+const m=location.hash.match(/^#pin-(\d{6})$/);
+if(m)joinForm(m[1]);else lobby();
+}
+</script></body></html>

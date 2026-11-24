@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trénink – Pololetka 1.P</title>
+<link rel="stylesheet" href="style.css"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: věcný, povzbudivý trenažér před zkouškou
+   IDEA: kartička s otázkou ze zkouškového archu, razítko správně/špatně
+   PICTURE: velká karta otázky uprostřed, nad ní pruh postupu
+   COLOUR: bílá, inkoust, petrolej EKO, bordó PRA, indigo UČE
+   TYPE/LAYOUT: Libre Franklin; jeden sloupec max 760px, ovládání nahoře */
+h1{font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mut);margin:0 0 20px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.bar button{font:600 15px Montserrat,sans-serif;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.bar button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.prog{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin:16px 0 6px}.prog i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;gap:10px;flex-wrap:wrap}
+.card{background:var(--card);border-radius:18px;padding:clamp(20px,4vw,36px);box-shadow:0 1px 0 var(--line),0 18px 40px -24px rgba(60,20,10,.35);margin-top:12px;position:relative}
+.tag{display:inline-block;font:600 13px sans-serif;color:#fff;background:var(--acc);border-radius:6px;padding:2px 8px;margin-bottom:10px}
+.q{font-size:clamp(20px,3.4vw,26px);font-weight:800;line-height:1.25;margin:0 0 18px;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;font:16px/1.35 Montserrat,sans-serif;min-height:54px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.opt b{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--line);font-size:14px}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}.opt.ok b{background:var(--ok);color:#fff}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}.opt.bad b{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.expl{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--bg);display:none}.expl.on{display:block}
+.expl strong{display:block;margin-bottom:2px}
+.next{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:600 16px Montserrat,sans-serif;min-height:48px;padding:0 22px;border-radius:12px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.flip{min-height:300px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;text-align:center}
+.flip .front{font-size:clamp(24px,4vw,34px);font-weight:800;line-height:1.15;text-wrap:balance}
+.flip .back{font-size:18px;line-height:1.5;text-align:left}
+.hint{color:var(--mut);font-size:14px;margin-top:14px}
+.big{font-size:clamp(48px,10vw,88px);font-weight:800;line-height:1;margin:6px 0}
+.note{color:var(--mut);font-size:13px;margin-top:28px}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html" aria-current="page">Trénink</a><a class="l" href="hra.html">Hra</a></div></header>
+<div class="wrap" style="max-width:820px">
+<h1>Trénink</h1>
+<p class="sub">Kvíz s vysvětlením, kartičky na opakování a zkouška nanečisto. Klávesy 1–4 = odpověď, Enter = další, mezerník = otočit kartu.</p>
+<div class="bar" id="mode"><button data-m="quiz">Kvíz</button><button data-m="cards">Kartičky</button><button data-m="exam">Zkouška nanečisto</button></div>
+<div class="bar" id="subj"><button data-s="ALL">Vše</button><button data-s="EKO">Ekonomika</button><button data-s="PRA">Právo</button><button data-s="UCE">Účetnictví</button><button data-s="WRONG">Moje chyby</button></div>
+<div class="prog"><i id="pbar" style="width:0"></i></div>
+<div class="meta"><span id="pos"></span><span id="score"></span></div>
+<div id="stage"></div>
+<p class="note">Otázky vznikly z učebních textů v Moodlu (1. ročník, 1. pololetí). Chyby se ukládají jen v tomhle prohlížeči.</p>
+</div>
+<script src="data.js"></script>
+<script>
+{
+const Q=window.Q, C=window.C;
+const COL={EKO:"#0d7680",PRA:"#990f3d",UCE:"#3d4db7"}, NAME={EKO:"Ekonomika",PRA:"Právo",UCE:"Účetnictví"};
+let st={mode:"quiz",subj:"ALL",list:[],i:0,ok:0,done:0,ans:false,flip:false,known:0};
+let wrong=new Set();try{wrong=new Set(JSON.parse(localStorage.getItem("pp_wrong")||"[]"))}catch(e){}
+const save=()=>{try{localStorage.setItem("pp_wrong",JSON.stringify([...wrong]))}catch(e){}};
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const stage=document.getElementById("stage");
+function build(){
+  const s=st.subj;
+  if(st.mode!=="cards"){
+    let src=Q.map((q,k)=>({k,s:q[0],q:q[1],o:q[2],c:q[3],e:q[4]}));
+    if(st.mode==="exam"){if(s==="WRONG")st.subj="ALL";src=st.subj==="ALL"?["EKO","PRA","UCE"].flatMap(x=>shuf(src.filter(y=>y.s===x)).slice(0,10)):shuf(src.filter(y=>y.s===st.subj)).slice(0,30)}
+    else src=s==="WRONG"?src.filter(x=>wrong.has(x.k)):s==="ALL"?src:src.filter(x=>x.s===s);
+    st.log=[];
+    st.list=shuf(src).map(x=>{const idx=shuf([0,1,2,3]);return {...x,o:idx.map(i=>x.o[i]),c:idx.indexOf(x.c)}});
+  }else{
+    let src=C.map(c=>({s:c[0],f:c[1],b:c[2]}));
+    if(s!=="ALL"&&s!=="WRONG")src=src.filter(x=>x.s===s);
+    st.list=shuf(src);
+  }
+  st.i=0;st.ok=0;st.done=0;st.ans=false;st.flip=false;st.known=0;render();
+}
+function pressed(){
+  for(const b of document.querySelectorAll("#mode button"))b.setAttribute("aria-pressed",b.dataset.m===st.mode);
+  for(const b of document.querySelectorAll("#subj button")){b.setAttribute("aria-pressed",b.dataset.s===st.subj);if(b.dataset.s==="WRONG"){b.textContent="Moje chyby ("+wrong.size+")";b.hidden=st.mode!=="quiz"}}
+}
+function render(){
+  pressed();
+  const n=st.list.length;
+  document.getElementById("pbar").style.width=(n?Math.min(st.i,n)/n*100:0)+"%";
+  if(!n){stage.innerHTML='<div class="card"><p class="q">Tady zatím nic není.</p><p>'+(st.subj==="WRONG"?"Zatím nemáš žádné chyby. Dej si kvíz z některého předmětu.":"")+'</p></div>';document.getElementById("pos").textContent="";document.getElementById("score").textContent="";return}
+  if(st.i>=n)return finish();
+  const x=st.list[st.i];document.documentElement.style.setProperty("--acc",COL[x.s]);
+  document.getElementById("pos").textContent=(st.i+1)+" / "+n;
+  if(st.mode!=="cards"){
+    document.getElementById("score").textContent=st.mode==="exam"?"Zkouška nanečisto – výsledek až na konci":"Správně "+st.ok+" z "+st.done;
+    stage.innerHTML='<div class="card"><span class="tag">'+NAME[x.s]+'</span><p class="q">'+esc(x.q)+'</p><div class="opts">'+x.o.map((o,j)=>'<button class="opt" data-j="'+j+'"><b>'+(j+1)+'</b><span>'+esc(o)+'</span></button>').join("")+'</div><div class="expl" id="ex"></div><div class="next" id="nx"></div></div>';
+  }else{
+    document.getElementById("score").textContent="Umím "+st.known;
+    stage.innerHTML='<div class="card flip" id="fc" tabindex="0" role="button" aria-label="Otočit kartu"><span class="tag" style="align-self:center">'+NAME[x.s]+'</span>'+(st.flip?'<div class="front" style="font-size:20px;margin-bottom:12px">'+esc(x.f)+'</div><div class="back">'+esc(x.b)+'</div>':'<div class="front">'+esc(x.f)+'</div><p class="hint">Klikni nebo mezerník pro otočení</p>')+'</div><div class="next">'+(st.flip?'<button class="btn" data-k="1">Umím</button><button class="btn ghost" data-k="0">Ještě ne</button>':'')+'</div>';
+  }
+}
+function answer(j){
+  if(st.ans)return;st.ans=true;const x=st.list[st.i],good=j===x.c;st.done++;
+  if(good){st.ok++;wrong.delete(x.k)}else{wrong.add(x.k)}save();
+  try{const S=JSON.parse(localStorage.getItem("pp_stats")||"{}");(S[x.s]=S[x.s]||[]).push(good?1:0);S[x.s]=S[x.s].slice(-200);localStorage.setItem("pp_stats",JSON.stringify(S))}catch(e){}
+  if(st.mode==="exam"){st.log.push({x,j,good});stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===j)b.style.borderColor="var(--ink)"});setTimeout(next,250);return}
+  stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===x.c)b.classList.add("ok");else if(k===j)b.classList.add("bad")});
+  const ex=document.getElementById("ex");ex.classList.add("on");ex.innerHTML='<strong style="color:'+(good?"var(--ok)":"var(--bad)")+'">'+(good?"Správně.":"Správně je: "+esc(x.o[x.c]))+'</strong>'+esc(x.e);
+  document.getElementById("nx").innerHTML='<button class="btn" id="go">Další otázka</button>';document.getElementById("go").focus();
+  document.getElementById("score").textContent="Správně "+st.ok+" z "+st.done;pressed();
+}
+function next(){st.i++;st.ans=false;st.flip=false;render()}
+function finish(){
+  document.documentElement.style.setProperty("--acc","#0d7680");
+  if(st.mode==="exam"){
+    const p=st.done?Math.round(st.ok/st.done*100):0,g=p>=90?1:p>=75?2:p>=60?3:p>=45?4:5;
+    const by=["EKO","PRA","UCE"].map(s=>{const a=st.log.filter(l=>l.x.s===s);return a.length?'<div class="stat" style="display:flex;justify-content:space-between;font-weight:700;padding:4px 0"><span>'+NAME[s]+'</span><span>'+a.filter(l=>l.good).length+' / '+a.length+'</span></div>':""}).join("");
+    const bad=st.log.filter(l=>!l.good);
+    stage.innerHTML='<div class="card"><p class="sub" style="margin:0">Zkouška nanečisto</p><p class="big">'+p+' %</p><p>'+st.ok+' z '+st.done+' správně → známka <strong>'+g+'</strong>.</p>'+by+(bad.length?'<h2 style="margin-top:18px">Co si zopakovat</h2>'+bad.map(l=>'<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>'+esc(l.x.q)+'</b><br><span style="color:var(--bad)">Tvoje: '+esc(l.x.o[l.j]??"–")+'</span><br><span style="color:var(--ok)">Správně: '+esc(l.x.o[l.x.c])+'</span><br><span class="mut">'+esc(l.x.e)+'</span></div>').join(""):"")+'<div class="next"><button class="btn" id="again">Nová zkouška</button><button class="btn ghost" id="wr">Projet chyby v kvízu</button></div></div>';
+    document.getElementById("again").onclick=build;document.getElementById("wr").onclick=()=>{st.mode="quiz";st.subj="WRONG";build()};
+  }else if(st.mode==="quiz"){
+    const p=st.done?Math.round(st.ok/st.done*100):0,g=p>=90?1:p>=75?2:p>=60?3:p>=45?4:5;
+    stage.innerHTML='<div class="card"><p class="sub" style="margin:0">Hotovo</p><p class="big">'+p+' %</p><p>'+st.ok+' z '+st.done+' správně. Podle školní stupnice by to byla <strong>'+g+'</strong>.</p><div class="next"><button class="btn" id="again">Znovu</button>'+(wrong.size?'<button class="btn ghost" id="wr">Projet chyby ('+wrong.size+')</button>':'')+'</div></div>';
+    document.getElementById("again").onclick=build;const w=document.getElementById("wr");if(w)w.onclick=()=>{st.subj="WRONG";build()};
+  }else{
+    const left=st.list.length-st.known;
+    stage.innerHTML='<div class="card"><p class="big">'+st.known+' / '+st.list.length+'</p><p>Karet umíš. '+(left?left+' se vrátí v dalším kole.':'Všechno umíš.')+'</p><div class="next"><button class="btn" id="again">Další kolo</button></div></div>';
+    document.getElementById("again").onclick=()=>{if(st.rest&&st.rest.length){st.list=shuf(st.rest);st.rest=[];st.i=0;st.known=0;render()}else build()};
+  }
+}
+stage.addEventListener("click",e=>{
+  const o=e.target.closest(".opt");if(o)return answer(+o.dataset.j);
+  if(e.target.id==="go")return next();
+  const k=e.target.closest("[data-k]");if(k){if(k.dataset.k==="1")st.known++;else (st.rest=st.rest||[]).push(st.list[st.i]);return next()}
+  if(e.target.closest("#fc")){st.flip=!st.flip;render()}
+});
+document.getElementById("mode").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.mode=b.dataset.m;st.rest=[];if(st.mode==="cards"&&st.subj==="WRONG")st.subj="ALL";build()};
+document.getElementById("subj").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.subj=b.dataset.s;st.rest=[];build()};
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  if(st.mode!=="cards"){if(!st.ans&&e.key>="1"&&e.key<="4"){e.preventDefault();answer(+e.key-1)}else if(st.ans&&e.key==="Enter"){e.preventDefault();next()}}
+  else if(e.key===" "){e.preventDefault();st.flip=!st.flip;render()}
+});
+const route=()=>{const h=location.hash.slice(1);if(["EKO","PRA","UCE","WRONG","ALL"].includes(h)){st.mode="quiz";st.subj=h}else if(h==="EXAM"){st.mode="exam";st.subj="ALL"}else if(h==="karticky"){st.mode="cards"}build()};
+window.addEventListener("hashchange",route);route();
+}
+</script></body></html>

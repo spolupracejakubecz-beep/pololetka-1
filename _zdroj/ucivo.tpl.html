@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Učivo – Pololetka 1.P</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.lay{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
+.toc{position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto;display:flex;flex-direction:column;gap:14px;font-size:14px}
+.toc .tg{display:flex;flex-direction:column;gap:2px}
+.toc .pill{align-self:flex-start;margin-bottom:4px}
+.toc a{text-decoration:none;padding:5px 8px;border-radius:6px;color:var(--mut);font-weight:600}
+.toc a:hover{background:var(--line);color:var(--ink)}
+.toc a.read::before{content:"✓ ";color:var(--ok);font-weight:900}
+.subj{margin-bottom:40px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(16px,3vw,28px);margin-bottom:16px}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:12px;padding-bottom:6px}
+.sh h3{font-size:22px;font-weight:800;margin:0;line-height:1.2}
+.done{font-size:14px;font-weight:700;color:var(--mut);display:flex;gap:6px;align-items:center;cursor:pointer;min-height:36px}
+.done input{width:20px;height:20px;accent-color:var(--ok)}
+.sec ul{padding-left:1.2em}.sec li{margin:4px 0}
+.sec strong{color:color-mix(in srgb,var(--ink) 92%,var(--brand))}
+.f{font-weight:800;font-size:18px;background:color-mix(in srgb,var(--yel) 30%,transparent);border-radius:10px;padding:12px 16px;margin:12px 0}
+.pr{margin:16px 0 0}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:18px}
+@media(max-width:860px){.lay{grid-template-columns:1fr}.toc{position:static;max-height:none;flex-direction:row;overflow-x:auto;gap:18px}.toc .tg{min-width:220px}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html" aria-current="page">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="hra.html">Hra</a></div></header>
+<div class="wrap">
+<div class="top"><div><h1>Učivo na pololetku</h1><p class="sub" style="margin:0">Výtah z Moodlu Spektrum, 1. ročník, 1. pololetí. U každé kapitoly si zaškrtni „Přečteno“, plán na úvodní stránce si to pamatuje.</p></div><div class="mut" id="cnt" style="font-weight:700"></div></div>
+<div class="lay">__TOC__<main>__MAIN__
+<p class="mut" style="font-size:13px">Marketing byl v Moodlu jen jako drobný tisk dvou stran na list, proto je ta kapitola stručnější a drží se standardního učiva. Hranice kategorií účetních jednotek jsou podle podkladů z Moodlu (novela od 2024 je zvýšila).</p></main></div>
+</div>
+<script>
+{
+let rd={};try{rd=JSON.parse(localStorage.getItem("pp_read")||"{}")}catch(e){}
+const sync=()=>{
+  const boxes=[...document.querySelectorAll("input[data-sec]")];
+  boxes.forEach(b=>b.checked=!!rd[b.dataset.sec]);
+  document.querySelectorAll(".toc a").forEach(a=>a.classList.toggle("read",!!rd[a.dataset.sec]));
+  document.getElementById("cnt").textContent="Přečteno "+boxes.filter(b=>b.checked).length+" / "+boxes.length;
+};
+document.addEventListener("change",e=>{const b=e.target.closest("input[data-sec]");if(!b)return;rd[b.dataset.sec]=b.checked;try{localStorage.setItem("pp_read",JSON.stringify(rd))}catch(_){}sync()});
+sync();
+}
+</script></body></html>

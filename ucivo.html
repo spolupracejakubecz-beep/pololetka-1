@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Učivo – Pololetka 1.P</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.lay{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
+.toc{position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto;display:flex;flex-direction:column;gap:14px;font-size:14px}
+.toc .tg{display:flex;flex-direction:column;gap:2px}
+.toc .pill{align-self:flex-start;margin-bottom:4px}
+.toc a{text-decoration:none;padding:5px 8px;border-radius:6px;color:var(--mut);font-weight:600}
+.toc a:hover{background:var(--line);color:var(--ink)}
+.toc a.read::before{content:"✓ ";color:var(--ok);font-weight:900}
+.subj{margin-bottom:40px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(16px,3vw,28px);margin-bottom:16px}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:12px;padding-bottom:6px}
+.sh h3{font-size:22px;font-weight:800;margin:0;line-height:1.2}
+.done{font-size:14px;font-weight:700;color:var(--mut);display:flex;gap:6px;align-items:center;cursor:pointer;min-height:36px}
+.done input{width:20px;height:20px;accent-color:var(--ok)}
+.sec ul{padding-left:1.2em}.sec li{margin:4px 0}
+.sec strong{color:color-mix(in srgb,var(--ink) 92%,var(--brand))}
+.f{font-weight:800;font-size:18px;background:color-mix(in srgb,var(--yel) 30%,transparent);border-radius:10px;padding:12px 16px;margin:12px 0}
+.pr{margin:16px 0 0}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:18px}
+@media(max-width:860px){.lay{grid-template-columns:1fr}.toc{position:static;max-height:none;flex-direction:row;overflow-x:auto;gap:18px}.toc .tg{min-width:220px}}
+</style></head><body>
+<header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html" aria-current="page">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="hra.html">Hra</a></div></header>
+<div class="wrap">
+<div class="top"><div><h1>Učivo na pololetku</h1><p class="sub" style="margin:0">Výtah z Moodlu Spektrum, 1. ročník, 1. pololetí. U každé kapitoly si zaškrtni „Přečteno“, plán na úvodní stránce si to pamatuje.</p></div><div class="mut" id="cnt" style="font-weight:700"></div></div>
+<div class="lay"><nav class="toc" aria-label="Obsah"><div class="tg"><span class="pill EKO">Ekonomika</span><a href="#eko-1" data-sec="eko-1">1. Základní ekonomické pojmy</a><a href="#eko-2" data-sec="eko-2">2. Výroba a výrobní faktory</a><a href="#eko-3" data-sec="eko-3">3. Tržní ekonomika</a><a href="#eko-4" data-sec="eko-4">4. Konkurence, soutěž, selhání trhu</a><a href="#eko-5" data-sec="eko-5">5. Podnikání a právní formy</a><a href="#eko-6" data-sec="eko-6">6. Hospodaření podniku</a><a href="#eko-7" data-sec="eko-7">7. Marketing</a></div><div class="tg"><span class="pill PRA">Právo</span><a href="#pra-1" data-sec="pra-1">1. Pojem právo, právní řád</a><a href="#pra-2" data-sec="pra-2">2. Právní normy</a><a href="#pra-3" data-sec="pra-3">3. Stát</a><a href="#pra-4" data-sec="pra-4">4. Ústavní právo</a><a href="#pra-5" data-sec="pra-5">5. Soudnictví</a><a href="#pra-6" data-sec="pra-6">6. Rodinné právo</a></div><div class="tg"><span class="pill UCE">Účetnictví</span><a href="#uce-1" data-sec="uce-1">1. Podstata a význam účetnictví</a><a href="#uce-2" data-sec="uce-2">2. Účetní doklady a zásady</a><a href="#uce-3" data-sec="uce-3">3. Daňová evidence</a><a href="#uce-4" data-sec="uce-4">4. Majetek a zdroje financování (rozvaha)</a><a href="#uce-5" data-sec="uce-5">5. Účty a jejich strany</a><a href="#uce-6" data-sec="uce-6">6. DPH</a><a href="#uce-7" data-sec="uce-7">7. Náklady a výnosy</a></div><div class="tg"><span class="pill CHY">Chytáky</span><a href="#chy" data-sec="chy">Chytáky a čísla k zapamatování</a></div></nav><main><div class="subj" id="s-EKO"><h2><span class="pill EKO" style="font-size:16px;vertical-align:middle">Ekonomika</span></h2><section id="eko-1" class="sec"><div class="sh"><h3>1. Základní ekonomické pojmy</h3><label class="done"><input type="checkbox" data-sec="eko-1"> Přečteno</label></div><ul>
+<li><strong>Ekonomie</strong> = teorie (věda o volbě při vzácných zdrojích). <strong>Ekonomika</strong> = praxe (výroba, rozdělování, směna, spotřeba).</li>
+<li><strong>Mikroekonomie</strong> = jednotlivci, firmy, domácnosti, ceny (majitel kina zdraží lístky). <strong>Makroekonomie</strong> = celé národní hospodářství: HDP, inflace, nezaměstnanost.</li>
+<li><strong>Pozitivní</strong> ekonomie popisuje, jak to je (fakta). <strong>Normativní</strong> říká, jak by to mělo být (hodnotové soudy).</li>
+<li><strong>Potřeba</strong> = pociťovaný nedostatek, který chceme odstranit. Potřeby jsou individuální a nekonečné.</li>
+<li>základní / vyšší / nahodilé / uměle vyvolané (reklama, móda)</li>
+<li>hmotné / nehmotné; individuální / kolektivní (silnice, veřejné osvětlení)</li>
+<li><strong>Maslowova pyramida</strong> (zdola): 1. fyziologické, 2. bezpečí a jistota, 3. sociální (láska, sounaležitost), 4. uznání a úcta, 5. seberealizace. První čtyři jsou nedostatkové, pátá růstová. Maslow ji formuloval v USA v roce 1943.</li>
+<li><strong>Statky</strong>: nehmotné (duševní výtvor) a hmotné. Hmotné = spotřební (konzumační = jednorázové, jídlo; konzumní = dlouhodobé, auto, dům) a kapitálové (slouží k další výrobě: provozní = materiál, investiční = stroje, haly).</li>
+<li><strong>Služby</strong> jsou nehmotné, neskladovatelné, nedělitelné.</li>
+<li><strong>Ekonomická vzácnost</strong> = omezenost zdrojů + užitečnost. <strong>Mezní užitek</strong> = užitek z jedné jednotky navíc; podle zákona klesajícího mezního užitku s množstvím klesá (první sklenice vody vs. desátá).</li>
+<li><strong>Spotřeba</strong>: nevýrobní (konečná – osobní / společenská) a výrobní (spotřeba kapitálových statků ve firmě).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-2" class="sec"><div class="sh"><h3>2. Výroba a výrobní faktory</h3><label class="done"><input type="checkbox" data-sec="eko-2"> Přečteno</label></div><div class="scroll"><table>
+<thead>
+<tr>
+<th>Výrobní faktor</th>
+<th>Co to je</th>
+<th>Odměna (důchod)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Práce</td>
+<td>cílevědomá lidská činnost</td>
+<td>mzda / plat / odměna</td>
+</tr>
+<tr>
+<td>Půda (přírodní zdroje)</td>
+<td>půda, nerosty, přírodní síly</td>
+<td>pozemková renta</td>
+</tr>
+<tr>
+<td>Kapitál</td>
+<td>hmotný (stroje, budovy) a finanční (peníze, CP)</td>
+<td>zisk nebo úrok</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Plat</strong> = stát a jeho organizace. <strong>Mzda</strong> = soukromý zaměstnavatel, pracovní smlouva. <strong>Odměna</strong> = dohoda o provedení práce (DPP) nebo o pracovní činnosti (DPČ).</li>
+<li><strong>Dělba práce</strong>: přirozená (muž/žena) → společenská (zemědělci a pastevci, řemesla, obchod, služby).</li>
+<li><strong>Hospodaření</strong> = volba mezi možnostmi při omezených zdrojích.</li>
+</ul>
+<div class="f">Efektivnost = výstup / vstup &nbsp;&nbsp;·&nbsp;&nbsp; Produktivita práce = výstup / počet pracovníků</div>
+
+<p><strong>Příklad z učebnice:</strong> podnik prodal za 1 000 000 Kč, vstupy stály 650 000 Kč, pracuje 25 lidí. Efektivnost = 1 000 000 / 650 000 = 1,538, tedy 154 % (z 1 Kč vložené získá 1,54 Kč). Produktivita = 1 000 000 / 25 = 40 000 Kč na pracovníka.</p>
+<p><strong>Tři základní ekonomické otázky:</strong> CO vyrábět, JAK vyrábět, PRO KOHO. Podle odpovědi rozlišujeme 4 ekonomické systémy: tradiční (zvyková), příkazová (direktivní, plán), tržní (rozhoduje trh; předpoklady: soukromé vlastnictví, cenový systém, konkurence) a smíšená (trh + zásahy státu).</p><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-3" class="sec"><div class="sh"><h3>3. Tržní ekonomika</h3><label class="done"><input type="checkbox" data-sec="eko-3"> Přečteno</label></div><ul>
+<li><strong>Trh</strong> = místo, kde se setkává nabídka a poptávka a vzniká cena. <strong>Tržní subjekty</strong>: domácnosti, firmy, stát.</li>
+<li><strong>Trhy podle předmětu</strong>: trh produktů, trh výrobních faktorů (práce – cena = mzda; půdy – cena = pozemková renta; kapitálu – cena = nájem) a finanční trh (cena peněz = úrok). Finanční trh = peněžní (do 1 roku), kapitálový (nad 1 rok), devizový (valuty, devizy, zlato).</li>
+<li><strong>Nominální mzda</strong> = částka v penězích. <strong>Reálná mzda</strong> = co si za ni koupím (po započtení inflace).</li>
+<li><strong>Trhy podle území</strong>: místní, regionální, národní, nadnárodní (EU), světový.</li>
+<li><strong>Poptávka (D)</strong> = množství, které zákazníci chtějí koupit za určitou cenu. <strong>Zákon klesající poptávky</strong>: čím vyšší cena, tím menší poptávané množství (nepřímá úměra). Druhy: individuální, tržní, agregátní.</li>
+<li><strong>Faktory poptávky</strong> (posouvají křivku D): důchodový efekt, substituční efekt, komplementy, preference a móda. Křivka D jde <strong>doprava</strong>, když vzrostou důchody, zlevní komplement nebo roste zájem. Jde <strong>doleva</strong>, když klesnou důchody, zdraží komplement nebo zlevní substitut.</li>
+<li><strong>Nabídka (S)</strong> = množství, které výrobci chtějí prodat za určitou cenu. <strong>Zákon rostoucí nabídky</strong>: s rostoucí cenou roste nabízené množství. Faktory: náklady výroby, ceny alternativních výrobků, vnější podmínky (počasí, kalamity), počet konkurentů, ceny, státní politika, očekávání. Nižší náklady → S doprava (zvětšení nabídky).</li>
+<li><strong>Posun křivky ≠ pohyb po křivce.</strong> Změna ceny = pohyb po křivce (změna nabízeného/poptávaného množství). Změna ostatních faktorů = posun celé křivky.</li>
+<li><strong>Tržní rovnováha</strong> = bod E, kde D = S; rovnovážná cena a rovnovážné množství. Cena nad rovnováhou → <strong>přebytek</strong> (převis nabídky, zásoby, slevy). Cena pod rovnováhou → <strong>nedostatek</strong> (převis poptávky, fronty). Příklad z učebnice: rovnováha 40 Kč / 500 tun; při 60 Kč chce prodávat 700 t, kupuje se jen 300 t → přebytek 400 t.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-4" class="sec"><div class="sh"><h3>4. Konkurence, soutěž, selhání trhu</h3><label class="done"><input type="checkbox" data-sec="eko-4"> Přečteno</label></div><ul>
+<li><strong>Typy konkurence</strong>: napříč trhem (prodejci vs. kupující), na straně poptávky (kupující mezi sebou, když je zboží málo), na straně nabídky (prodejci mezi sebou). Cenová (cenová válka) vs. necenová (servis, doprava zdarma, 3+1, obal).</li>
+<li><strong>Dokonalá konkurence</strong> = teoretický model: mnoho prodejců i kupců, homogenní produkt, žádné bariéry, dokonalé informace. V realitě neexistuje.</li>
+<li><strong>Nedokonalá konkurence</strong>:</li>
+<li><strong>Monopol</strong> = jediný prodejce, bariéry vstupu, diktuje cenu (Póšta, ČEZ).</li>
+<li><strong>Oligopol</strong> = pár velkých firem, vzájemná závislost, následují se v cenách (O2, T-Mobile).</li>
+<li><strong>Monopolistická konkurence</strong> = mnoho firem, diferencovaný produkt, volný vstup.</li>
+<li><strong>Monopson</strong> = jediný kupující (stát a zbraně).</li>
+<li><strong>Hospodářská soutěž</strong> probíhá horizontálně (konkurenti) i vertikálně (dodavatel–odběratel). Podmínky: demonopolizace a transparentnost trhu.</li>
+<li><strong>Klíčový rozdíl</strong>: <strong>nekalá soutěž</strong> = nepoctivé jednání v rámci soutěže (klamavá reklama…). <strong>Omezování soutěže</strong> = vylučování soupeřů (kartely, zneužití dominance, spojování). Ochranu proti omezování má <strong>ÚOHS</strong> (Úřad pro ochranu hospodářské soutěže) v Brně; předsedu jmenuje prezident na návrh vlády na 6 let, nejvýš dvakrát.</li>
+<li><strong>Nekalá soutěž</strong> (2 znaky: rozpor s dobrými mravy soutěže + způsobilé přivodit újmu) – 9 skutkových podstat: klamavá reklama, klamavé označení zboží, vyvolání nebezpečí záměny, parazitování na pověsti, podplácení, zlehčování, srovnávací reklama (nepřípustná), porušení obchodního tajemství, ohrožování zdraví a životního prostředí.</li>
+<li><strong>Sankce</strong>: soukromoprávní (zdržení se jednání, odstranění závadného stavu, přiměřené zadostiučinění, náhrada škody, vydání bezdůvodného obohacení; řeší krajský soud) a veřejnoprávní (trestní zákoník – až 3 roky).</li>
+<li><strong>Selhání trhu</strong> = trh neefektivně rozděluje zdroje. Důvody: 1. monopol, 2. veřejné statky (nezmenšitelnost + nevylučitelnost, černý pasažér; obrana, osvětlení), 3. externality (kladné: včelař a sad; záporné: chemička a ryby), 4. nedokonalé informace.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-5" class="sec"><div class="sh"><h3>5. Podnikání a právní formy</h3><label class="done"><input type="checkbox" data-sec="eko-5"> Přečteno</label></div><ul>
+<li><strong>Podnikání</strong> = soustavná činnost, samostatně, vlastním jménem, na vlastní odpovědnost, za účelem zisku. Podnikatelský záměr + <strong>SWOT</strong> (silné/slabé stránky = uvnitř firmy; příležitosti/hrozby = okolí).</li>
+<li><strong>Živnosti</strong>: ohlašovací (řemeslné – výuční list + praxe; vázané – zvláštní odborná způsobilost; volná – jen všeobecné podmínky, od 2008 jediná) a koncesované (státní souhlas, koncesní listina, cca 2 měsíce; taxislužba, autoškola, cestovka). Ohlašovací lze provozovat od ohlášení, koncesovanou až od vydání listiny.</li>
+<li><strong>Všeobecné podmínky</strong>: 18 let, svéprávnost, bezúhonnost. Poplatek 1 000 Kč, živnostenský list do 15 dnů, změny hlásit do 15 dnů. Nesplňuješ odbornou způsobilost → <strong>odpovědný zástupce</strong>. Ohlásit lze přes <strong>CRM</strong> (Centrální registrační místo, Jednotný registrační formulář).</li>
+<li><strong>Právnická osoba vzniká dnem zápisu do obchodního rejstříku</strong> (vede krajský soud). Návrh na zápis do 6 měsíců od založení.</li>
+</ul>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Min. počet</th>
+<th>Základní kapitál</th>
+<th>Ručení</th>
+<th>Statutární orgán</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v. o. s.</td>
+<td>2</td>
+<td>není povinný</td>
+<td>neomezeně, společně a nerozdílně</td>
+<td>všichni společníci</td>
+</tr>
+<tr>
+<td>k. s.</td>
+<td>2 (komplementář + komanditista)</td>
+<td>vklad jen komanditista</td>
+<td>komplementář neomezeně, komanditista do výše nesplaceného vkladu</td>
+<td>komplementáři</td>
+</tr>
+<tr>
+<td>s. r. o.</td>
+<td>1</td>
+<td>1 Kč</td>
+<td>do výše nesplaceného vkladu</td>
+<td>jednatelé</td>
+</tr>
+<tr>
+<td>a. s.</td>
+<td>1</td>
+<td>2 000 000 Kč nebo 80 000 EUR (banka 500 mil. Kč)</td>
+<td>akcionáři neručí</td>
+<td>představenstvo (dualistický) / správní rada (monistický)</td>
+</tr>
+<tr>
+<td>družstvo</td>
+<td>3</td>
+<td>nezapisuje se</td>
+<td>členové neručí</td>
+<td>představenstvo (pod 50 členů může být předseda)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Osobní společnosti (v. o. s., k. s.) = neomezené ručení, osobní účast. Kapitálové (s. r. o., a. s.) = základní kapitál, orgány, omezené nebo žádné ručení.</li>
+<li>Orgány a. s. – dualistický: valná hromada, představenstvo, dozorčí rada (3 členové). Monistický: valná hromada + správní rada (statutární ředitel zrušen od 1. 1. 2021). Orgány družstva: členská schůze, představenstvo, kontrolní komise.</li>
+<li>Daně: zisk PO 21 %, podíl na zisku / dividenda pak srážková daň 15 % = dvojí zdanění (s. r. o., a. s.). v. o. s.: zisk zdaní společníci daní FO 15 % + odvody.</li>
+<li><strong>Akcie</strong> = cenný papír o podílu v a. s. Práva akcionáře: řízení (hlas na VH), dividenda, likvidační zůstatek. Kmenové / prioritní (přednost na dividendu, omezený hlas) / zaměstnanecké. Jmenovitá hodnota = ZK / počet akcií (5 000 000 / 1 000 = 5 000 Kč).</li>
+<li><strong>Organizace</strong>: ziskové (podnik) a neziskové. Státní neziskové: rozpočtové (vše hradí rozpočet, ministerstva, soudy, armáda) a příspěvkové (částěčně vlastní příjmy, divadla, muzea). Nestátní: církve, spolky, o. p. s., nadace, politické strany.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-6" class="sec"><div class="sh"><h3>6. Hospodaření podniku</h3><label class="done"><input type="checkbox" data-sec="eko-6"> Přečteno</label></div><ul>
+<li><strong>Výnosy</strong> = peníze „získané“ za období bez ohledu na inkaso (faktura vystavena). <strong>Náklady</strong> = účelně vynaložené na získání výnosů. <strong>HV = V − N</strong> (kladný = zisk, záporný = ztráta).</li>
+<li><strong>Příjem ≠ výnos</strong>: příjem = peníze skutečně došly (úvěr 250 000 Kč je příjem, ale ne výnos). <strong>Výdaj ≠ náklad</strong>: nákup stroje za hotové = výdaj, ne náklad (do nákladů jde postupně přes odpisy); odpis = náklad, ne výdaj.</li>
+<li>Členy nákladů: druhové (co bylo spotřebováno, třída 5), kalkulační (přímé / nepřímé = režijní), podle objemu výroby (<strong>fixní</strong> – nájem, odpisy, mzdy THP, reklama; <strong>variabilní</strong> – materiál, mzdy dělníků, obaly).</li>
+</ul>
+<div class="f">Bod zvratu: Q = FN / (P − vn) &nbsp;&nbsp;·&nbsp;&nbsp; CN = FN + vn · Q &nbsp;&nbsp;·&nbsp;&nbsp; TR = P · Q</div>
+
+<p><strong>Příklad (typ 3. dú):</strong> fixní náklady 120 000 Kč, cena 500 Kč/ks, variabilní náklady 300 Kč/ks. Q = 120 000 / (500 − 300) = <strong>600 ks</strong>. Při 600 ks: tržby 300 000, náklady 120 000 + 180 000 = 300 000, zisk 0. Každý kus navíc přidá 200 Kč zisku.</p>
+<p><strong>Příklad (typ 2. dú – obchodník s přirážkou):</strong> nakoupí za 100 Kč, přirážka 35 % → prodává za 135 Kč, obchodní rozpětí 35 Kč. Aby pokryl náklady N + chtěný příjem M, potřebuje rozpětí N + M, tedy obrat (tržbu) = (N + M) / 0,35 × 1,35. Např. 45 000 Kč měsíčně → rozpětí 45 000 → nákup 128 571 Kč → tržba 173 571 Kč.</p>
+<ul>
+<li><strong>Rentabilita</strong> = zisk / vložený kapitál. ROA = zisk / celkový kapitál (aktiva). ROE = čistý zisk / vlastní kapitál. Rentabilita tržeb = zisk / tržby. Rentabilita nákladů = zisk / náklady.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section><section id="eko-7" class="sec"><div class="sh"><h3>7. Marketing</h3><label class="done"><input type="checkbox" data-sec="eko-7"> Přečteno</label></div><ul>
+<li>Marketing = uspokojit potřeby zákazníka se ziskem. <strong>Marketingový mix 4P</strong>: Product (výrobek), Price (cena), Place (distribuce), Promotion (propagace).</li>
+<li><strong>Produkt</strong> má 3 úrovně: jádro (základní užitek), vlastní produkt (značka, design, obal, kvalita), rozšířený produkt (záruka, servis, doprava). <strong>Životní cyklus</strong>: zavádění → růst → zralost → úpadek.</li>
+<li><strong>Cena</strong>: podle nákladů, podle poptávky (vnímaná hodnota), podle konkurence. Psychologická cena 99 Kč. Strategie: sbíraní smetany (vysoká cena na začátku), pronikavá cena (nízká pro dobytí trhu).</li>
+<li><strong>Distribuce</strong>: přímá (výrobce → zákazník) a nepřímá (přes velkoobchod, maloobchod, agenty). Intenzivní / selektivní / výhradní.</li>
+<li><strong>Komunikační mix</strong>: reklama, podpora prodeje, public relations, přímý marketing, osobní prodej (+ sponzoring, POP v místě prodeje).</li>
+</ul>
+<p><em>Pozn.: u marketingu byl PDF v Moodlu jen jako drobný tisk dvou stran na list, takže tahle část je stručnější a drží se standardního učiva. Projeď si v něm hlavně obrázky a tabulky.</em></p><p class="pr"><a class="btn ghost" href="trenink.html#EKO">Procvičit ekonomika</a></p></section></div><div class="subj" id="s-PRA"><h2><span class="pill PRA" style="font-size:16px;vertical-align:middle">Právo</span></h2><section id="pra-1" class="sec"><div class="sh"><h3>1. Pojem právo, právní řád</h3><label class="done"><input type="checkbox" data-sec="pra-1"> Přečteno</label></div><ul>
+<li><strong>Právo</strong> = soubor obecně závazných pravidel chování, vynutitelných státem. <strong>Právo je minimum morálky.</strong></li>
+<li><strong>Objektivní právo</strong> = pravidla vytvořená státem (zákony). <strong>Subjektivní právo</strong> = konkrétní oprávnění účastníka vztahu (pronajímatel může po nájemci chtít nájemné).</li>
+<li>Princip: občan smí dělat vše, co zákon nezakazuje; státní moc jen to, co zákon stanoví.</li>
+<li><strong>Právní řád</strong> = souhrn všech právních předpisů státu; části nesmějí být v rozporu s Ústavou. <strong>Hierarchie podle právní síly</strong> (shora): 1. Ústava a ústavní zákony, 2. zákony, 3. zákonná opatření Senátu, 4. nařízení vlády, 5. vyhlášky ministerstev, 6. vyhlášky nižších orgánů (obce, kraje). Body 1–3 = předpisy zákonné (vydává Parlament), 4–6 = podzákonné (prováděcí).</li>
+<li><strong>Typy právní kultury</strong>: kontinentálně evropský (hlavní pramen = zákon; ČR) a anglosaský (precedenty a obyceje; UK, USA).</li>
+<li><strong>Prameny práva</strong>: normativní právní akt, právní obyčej (nejstarší, nepsaný), soudní precedent, normativní smlouva. V ČR hlavně normativní právní akty a mezinárodní smlouvy; precedent u nás pramenem není. <strong>Ratifikace</strong> = definitivní souhlas státu se smlouvou (Parlament + podpis prezidenta).</li>
+<li><strong>Systém práva</strong>: mezinárodní / vnitrostátní; <strong>veřejné</strong> (nerovné postavení, nadřazený stát: ústavní, správní, trestní, finanční, živnostenské, občanské procesní) / <strong>soukromé</strong> (rovné strany: občanské hmotné, obchodní korporace, rodinné; pracovní je smíšené); <strong>hmotné</strong> (práva a povinnosti, např. občanský zákoník) / <strong>procesní</strong> (postup řízení, např. občanský soudní řád).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section><section id="pra-2" class="sec"><div class="sh"><h3>2. Právní normy</h3><label class="done"><input type="checkbox" data-sec="pra-2"> Přečteno</label></div><ul>
+<li><strong>Struktura normy</strong>: hypotéza (podmínka – „když ti je 18“), dispozice (pravidlo – „můžeš volit“), sankce (následek nesplnění). Příklad: nový zaměstnanec (hypotéza) – zaměstnavatel ho musí seznámit s BOZP (dispozice) – jinak pokuta od inspektorátu (sankce).</li>
+<li><strong>Dělení norem</strong>:</li>
+<li>podle chování: zavazující (přikazující – zaplatit daň; zakazující) a oprávňující (můžeš ukončit pracovní poměr)</li>
+<li>podle závaznosti: <strong>kogentní</strong> (donucující, nelze se odchýlit) a <strong>dispozitivní</strong> (podpůrné, platí, když si strany nedohodnou jinak)</li>
+<li>podle obsahu: veřejné / soukromé</li>
+<li>podle prvotnosti: prvotní (ústava, zákony) / odvozené (vyhlášky, nařízení)</li>
+<li>podle legislativní techniky: <strong>taxativní</strong> (uzavřený výčet) / <strong>demonstrativní</strong> (příkladný, slovo „zejména“)</li>
+<li><strong>Platnost</strong> = norma vyšla ve Sbírce zákonů. <strong>Účinnost</strong> = od kdy se musí dodržovat (časová působnost). Mezi nimi je „legisvakační“ lhůta na seznámení. Příklad: zákoník práce platný 7. 6. 2006, účinný 1. 1. 2007.</li>
+<li><strong>Působnost</strong>: časová, prostorová (celé území / část), osobní (skupina osob – zákon o Policii), věcná (okruh vztahů).</li>
+<li><strong>Pravomoc vydávat předpisy</strong>: Parlament (zákony, ústavní zákony; Senát zákonná opatření), vláda (nařízení), ministerstva (vyhlášky), územní samospráva (vyhlášky a nařízení).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section><section id="pra-3" class="sec"><div class="sh"><h3>3. Stát</h3><label class="done"><input type="checkbox" data-sec="pra-3"> Přečteno</label></div><ul>
+<li><strong>Stát</strong> = územní mocenská organizace se suverenitou. Znaky: území, obyvatelstvo (státní občanství), zvláštní veřejná moc, legitimita a zákonnost, daně a poplatky, právo, suverenita (vnější i vnitřní).</li>
+<li><strong>Funkce státu</strong>: vnitřní (ekonomická, sociální) a vnější (obrana, zahraniční politika).</li>
+<li><strong>Formy vlády</strong>: demokracie (přímá – referendum; nepřímá – volení zástupci), autokracie (diktatura, teokracie), oligarchie (vláda několika).</li>
+<li><strong>Modely státu</strong>: parlamentní republika (ČR), prezidentská republika (USA), parlamentní monarchie (Velká Británie, Švédsko), dualistická monarchie (Saudská Arábie, Kuvajt).</li>
+<li><strong>Podle uspořádání</strong>: unitární (ČR, SR), složený (federace), jiný (personální unie, konfederace – Švýcarsko jen názvem).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section><section id="pra-4" class="sec"><div class="sh"><h3>4. Ústavní právo</h3><label class="done"><input type="checkbox" data-sec="pra-4"> Přečteno</label></div><ul>
+<li><strong>Ústava ČR</strong>: preambule + 113 článků v 8 hlavách: 1. základní ustanovení, 2. moc zákonodárná, 3. moc výkonná, 4. moc soudní, 5. NKÚ, 6. ČNB, 7. územní samospráva, 8. přechodná a závěrečná ustanovení. ČR = „svrchovaný, jednotný a demokratický právní stát“, zdrojem moci je lid, hlavní město Praha.</li>
+<li><strong>Dělba moci</strong>: zákonodárná (Parlament), výkonná (prezident, vláda), soudní (soudy).</li>
+</ul>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th>Poslanecká sněmovna</th>
+<th>Senát</th>
+<th>Prezident</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Počet</td>
+<td>200 poslanců</td>
+<td>81 senátorů</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Volební období</td>
+<td>4 roky</td>
+<td>6 let, každé 2 roky se mění 1/3</td>
+<td>5 let, max. 2× po sobě</td>
+</tr>
+<tr>
+<td>Pasivní volební právo</td>
+<td>21 let</td>
+<td>40 let</td>
+<td>40 let</td>
+</tr>
+<tr>
+<td>Volební systém</td>
+<td>poměrný, hranice 5 %</td>
+<td>většinový, 2 kola</td>
+<td>přímá volba, většinová, 2 kola</td>
+</tr>
+<tr>
+<td>Rozpuštění</td>
+<td>může ji rozpustit prezident</td>
+<td>nelze rozpustit</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Volit (aktivně) můžeš od 18 let. Volby: všeobecné, rovné, přímé, tajné.</li>
+<li><strong>Rozpuštění sněmovny</strong> (ne 3 měsíce před koncem období), když: 3× vysloví nedůvěru vládě, 3 měsíce se neusnese o vládním návrhu zákona, zasedání přerušeno déle než lze, 3 měsíce neusnášeníschopná.</li>
+<li><strong>Kandidatura na prezidenta</strong>: podpora 20 poslanců, nebo 10 senátorů, nebo 50 000 podpisů občanů.</li>
+<li><strong>Imunita</strong>: poslance/senátora nelze trestně stíhat bez souhlasu komory; zadržení jen při činu, předseda komory se vyjádří do 24 hodin. Prezident je trestně neodpovědný, žalovat lze jen pro velezradu.</li>
+<li><strong>Legislativní proces</strong>: návrh podají poslanec, skupina poslanců, Senát, vláda, zastupitelstvo kraje → Poslanecká sněmovna, <strong>3 čtení</strong> → Senát (schválí, zamítne, vrátí s pozměňovacími návrhy; mlčí-li 30 dní, je zákon přijat) → prezident (podepíše nebo <strong>veto do 15 dnů</strong>; sněmovna ho přehłasuje nadpoloviční většinou všech poslanců = 101) → Sbírka zákonů. U ústavního zákona veto nelze.</li>
+<li><strong>Většiny</strong>: kvórum = 1/3 (67 poslanců); prostá = nadpoloviční přítomných; absolutní = nadpoloviční všech (válečný stav); kvalifikovaná = 3/5 všech poslanců (120) a 3/5 přítomných senátorů (ústavní zákony).</li>
+<li><strong>Prezident sám</strong> (bez kontrasignace): jmenuje a odvolává premiéra a vládu, svolává a rozpouští sněmovnu, veto, jmenuje soudce Ústavního soudu, předsedu NS, členy bankovní rady ČNB, uděluje milost. <strong>S kontrasignací</strong> premiéra: zastupuje stát navenek, sjednává mezinárodní smlouvy, je vrchní velitel ozbrojených sil, jmenuje ostatní soudce, uděluje amnestii, vyhlašuje volby.</li>
+<li><strong>Vláda</strong> = vrcholný orgán výkonné moci (předseda, místopředsedové, ministři), odpovědná Poslanecké sněmovně. Do 30 dnů od jmenování žádá o důvěru. <strong>Interpelace</strong> = dotaz poslance na člena vlády, odpověď do 30 dnů. Vydává nařízení vlády.</li>
+<li><strong>NKÚ</strong> kontroluje hospodaření se státním majetkem. <strong>ČNB</strong> = centrální banka, guvernéra jmenuje prezident. <strong>Územní samospráva</strong>: obce a 14 krajů, zastupitelstva volená na 4 roky.</li>
+<li><strong>Listina základních práv a svobod</strong>: přijata 9. 1. 1991, součást ústavního pořádku, 6 hlav (obecná ustanovení; lidská a politická práva; práva menšin; hospodářská, sociální a kulturní; právo na soudní ochranu; společná ustanovení). Práva jsou nezadatelná, nezcizitelná, nepromlčitelná, nezrušitelná. Trest smrti se nepřipouští. Presumpce neviny.</li>
+<li><strong>Ombudsman</strong> (veřejný ochránce práv): volí ho Poslanecká sněmovna na 6 let (max. 2×), 40+ let, nesmí být ve straně; šetří stížnosti na úřady (ne na Parlament, prezidenta, vládu, soudy).</li>
+<li><strong>Státní symboly</strong>: barvy, vlajka, vlajka prezidenta, velký a malý znak, pečeť, hymna (Kde domov můj). Korunovační klenoty sem nepatří.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section><section id="pra-5" class="sec"><div class="sh"><h3>5. Soudnictví</h3><label class="done"><input type="checkbox" data-sec="pra-5"> Přečteno</label></div><ul>
+<li><strong>Soustava obecných soudů je čtyřstupňová</strong>: 1. okresní soudy (+ obvodní v Praze), 2. krajské soudy (8, v Praze Městský soud), 3. vrchní soudy (2: Praha a Olomouc), 4. Nejvyšší soud a Nejvyšší správní soud (oba v Brně).</li>
+<li><strong>Ústavní soud</strong> není součástí obecných soudů; Brno, 15 soudců na 10 let, jmenuje prezident se souhlasem Senátu (40+ let, právnické VŠ, 10 let praxe). Ruší protiústavní zákony, rozhoduje o ústavních stížnostech.</li>
+<li><strong>Soudci obecných soudů</strong>: jmenuje prezident bez časového omezení; podmínky: bezúhonnost, občanství, právnické VŠ, min. 30 let, 3 roky praxe, odborná justiční zkouška. Funkce zaniká koncem roku, kdy soudce dosáhl 70 let. <strong>Přísedící</strong> = laici volení zastupitelstvy na 4 roky.</li>
+<li><strong>Státní zastupitelství</strong> = veřejná žaloba v trestním řízení. Nejvyšší v Brně, vrchní Praha a Olomouc, 8 krajských, 86 okresních. Státního zástupce jmenuje ministr spravedlnosti (25+ let).</li>
+<li><strong>Občanské soudní řízení</strong>: předběžné opatření, smírčí řízení, žaloba (statusová, na plnění, určovací), žalobní petit = co žalobce chce. Formy rozhodnutí: rozsudek (ve věci samé, právní moc 15 dnů po doručení), usnesení (procesní věci), platební rozkaz. Čestné prohlášení ani přísaha nejsou důkazem.</li>
+<li><strong>Opravné prostředky</strong>: řádné = odvolání (do 15 dnů) a odpor proti platebnímu rozkazu (do 15 dnů); mimořádné = dovolání (k Nejvyššímu soudu), obnova řízení (do 3 měsíců od zjištění důvodu), žaloba pro zmatečnost. Nesplnil-li povinný dobrovolně → výkon rozhodnutí (exekuce: srážky ze mzdy, prodej věcí, vyklizení…).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section><section id="pra-6" class="sec"><div class="sh"><h3>6. Rodinné právo</h3><label class="done"><input type="checkbox" data-sec="pra-6"> Přečteno</label></div><ul>
+<li>Pramen: <strong>občanský zákoník (NOZ)</strong> a LZPS. Manželství = trvalý svazek muže a ženy; monogamie, rovnoprávnost, dobrovolnost.</li>
+<li><strong>Zasnoubení</strong> není právně závazné. <strong>Druh a družka</strong> nemají SJM ani vyživovací povinnost a dědí hůř. <strong>Registrované partnerství</strong> = osoby stejného pohlaví, uzavírá se na matrice; nemají SJM, ale dědí v I. skupině; od 2025 mohou přiosvojit dítě partnera.</li>
+<li><strong>Vznik manželství</strong>: souhlasný projev vůle před orgánem, veřejně, slavnostně, za přítomnosti <strong>2 svědků</strong>. Občanský sňatek (matrikář) nebo církevní (osvědčení z matriky max. 3 měsíce staré; protokol na matriku do 3 pracovních dnů). Sňatek i v zastoupení na plnou moc.</li>
+<li><strong>Překážky manželství</strong>: bigamie, příbuzenství (incest), nezletilost (nad 16 let jen s povolením soudu), nesvéprávnost, poručnictví / pěstounství.</li>
+<li><strong>Práva a povinnosti manželů</strong>: rovnost, úcta, věrnost, společné bydlení, právo na informace o příjmech. Běžné záležitosti zavazují oba (koberec za 10 000 Kč), neběžné jen se souhlasem druhého (auto za 1 mil.). Vyživovací povinnost mezi manželi má přednost před povinností dětí a rodičů.</li>
+<li><strong>SJM</strong> (společné jmění manželů): vše nabyté za manželství. <strong>Nepatří tam</strong>: věci osobní potřeby, dary a dědictví jednoho z manželů, náhrada nemajetkové újmy, majetek nabytý před sňatkem a co se za něj pořídilo. Zisk z výlučného majetku (nájem z bytu) do SJM patří. Režimy: zákonný, smluvený (notářský zápis – oddělené jmění, zúžení, rozšíření), soudní (zúžení nebo zrušení, např. marnotratnost, podnikání).</li>
+<li><strong>Vypořádání SJM</strong>: dohodou, soudem, jinak po <strong>3 letech</strong> platí zákonná domněnka (movité věci má ten, kdo je užívá, ostatní napůl).</li>
+<li><strong>Rozvod (novela od 1. 1. 2026)</strong>: běžný – soud už nezjišťuje příčiny rozvratu, souhlas druhého není nutný (poplatek 5 000 Kč); smluvený – manželství aspoň 1 rok, dohody o dětech a majetku, odpadla podmínka 6 měsíců odloučení (poplatek 2 000 Kč); ztížený (tvrdostní klauzule – zájem dítěte nebo nevinného manžela, neplatí po 3 letech odloučení). Rozvod a úprava poměrů dětí = jedno řízení.</li>
+<li>Po rozvodu lze do <strong>6 měsíců</strong> vrátit původní příjmení. Sankční výživné nejdéle 3 roky.</li>
+<li><strong>Rodičovská odpovědnost</strong> vzniká narozením, zaniká nabytím plné svéprávnosti dítěte; měnit ji může jen soud. Výživné: dokud se dítě nemůže samo živit (není pevný věk).</li>
+<li><strong>Určení otcovství – 3 domněnky</strong>: 1. manžel matky (i do 300 dnů po zániku manželství), 2. souhlasné prohlášení matky a muže, 3. rozhodnutí soudu (soulož 180–300 dnů před porodem, DNA). Matkou je vždy žena, která dítě porodila. Popření: matka do 6 měsíců od narození, manžel do 6 měsíců od pochybností, nejpozději do 6 let.</li>
+<li><strong>Náhradní péče</strong>:</li>
+</ul>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Co znamená</th>
+<th>Vyživovací povinnost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Osvojení (adopce)</td>
+<td>dítě jako vlastní, vazby k původní rodině zanikají; rozdíl věku zpravidla 16 let, 3 měsíce předadopční péče, od 12 let souhlas dítěte, po 3 letech nezrušitelné</td>
+<td>osvojitel</td>
+</tr>
+<tr>
+<td>Pěstounská péče</td>
+<td>dítě v rodině pěstouna, rodičům zůstává odpovědnost</td>
+<td>biologičtí rodiče (platí státu)</td>
+</tr>
+<tr>
+<td>Poručnictví</td>
+<td>rodiče zemřeli nebo byli zbaveni odpovědnosti; poručník = zákonný zástupce</td>
+<td>ne poručník</td>
+</tr>
+<tr>
+<td>Opatrovnictví</td>
+<td>jen pro konkrétní řízení (kolizní opatrovník, často OSPOD)</td>
+<td>ne</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Sociálně-právní ochrana dětí (OSPOD)</strong>: MPSV, krajské úřady, obce s rozšířenou působností, ÚMPOD v Brně. Výchovná opatření: napomenutí, dohled, omezení, povinná odborná pomoc. Ústavní výchova až jako poslední možnost.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#PRA">Procvičit právo</a></p></section></div><div class="subj" id="s-UCE"><h2><span class="pill UCE" style="font-size:16px;vertical-align:middle">Účetnictví</span></h2><section id="uce-1" class="sec"><div class="sh"><h3>1. Podstata a význam účetnictví</h3><label class="done"><input type="checkbox" data-sec="uce-1"> Přečteno</label></div><ul>
+<li>Základní předpis: <strong>zákon o účetnictví č. 563/1991 Sb.</strong> + vyhláška 500/2002 Sb. (podnikatelé) + České účetní standardy. Daňovou evidenci upravuje zákon o daních z příjmů č. 586/1992 Sb.</li>
+<li><strong>Účetnictví vedou</strong>: všechny právnické osoby; fyzické osoby zapsané v obchodním rejstříku; FO, jejichž obrat přesáhl <strong>25 mil. Kč</strong>; FO, které se rozhodnou dobrovolně. Ostatní FO vedou <strong>daňovou evidenci</strong>.</li>
+<li>Uživatelé informací: investoři, vedoucí pracovníci, věřitelé (banky), finanční úřad, zaměstnanci, zákazníci, veřejnost.</li>
+<li><strong>Kategorie účetních jednotek</strong> (podle aktiv, čistého obratu a zaměstnanců; nepřekročit aspoň 2 ze 3): mikro 9 mil. / 18 mil. / 10, malá 100 mil. / 200 mil. / 50, střední 500 mil. / 1 mld. / 250, velká = překračuje. <em>(Čísla podle podkladů z Moodlu; novela od 2024 hranice zvýšila, v testu ale počítej s čísly z učebního textu.)</em></li>
+<li>Účetnictví musí být <strong>správné, úplné, průkazné, srozumitelné, přehledné a trvalé</strong>. Vede se v českém jazyce a v korunách, podvojně.</li>
+<li><strong>Účetní období</strong> = 12 měsíců po sobě: kalendářní rok nebo hospodářský rok (začíná jiným měsícem než lednem).</li>
+<li>Historie: podvojné účetnictví popsal Luca Pacioli v roce 1494.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-2" class="sec"><div class="sh"><h3>2. Účetní doklady a zásady</h3><label class="done"><input type="checkbox" data-sec="uce-2"> Přečteno</label></div><ul>
+<li><strong>Účetní doklad</strong> = průkazný záznam, musí obsahovat: označení, obsah případu a účastníky, částku (nebo cenu za MJ a množství), okamžik vyhotovení, okamžik uskutečnění (liší-li se), podpisové záznamy odpovědných osob.</li>
+<li>Druhy dokladů: faktury vystavené (FV) a přijaté (FP), příjmové (PPD) a výdajové (VPD) pokladní doklady, bankovní výpisy (BV), vnitřní doklady (příjemka, výdejka, výplatní listina). Jednotlivé / sběrné (max. za 1 měsíc). Vnější / vnitřní.</li>
+<li><strong>Daňový doklad</strong> do 15 dnů od plnení; zjednodušený daňový doklad do 10 000 Kč.</li>
+<li><strong>Opravy</strong>: účetním způsobem – doplňkový zápis (zapsáno málo), částečné storno (zapsáno moc, rozdíl mínusem), úplné storno (špatný účet nebo strana); neúčetním způsobem – přeškrtnutí tenkou čarou, aby původní zůstal čitelný, + datum a podpis. Přepisování, mazání, přelepování je zakázané.</li>
+<li><strong>Účetní knihy</strong>: deník (chronologicky), hlavní kniha (věcně, syntetické účty), knihy analytických účtů, podrozvahové účty. Součet analytických účtů = syntetický účet.</li>
+<li><strong>Oběh dokladů</strong>: přezkoušení (věcné a formální) → příprava k zaúčtování (třídění, číslování, předkontace) → zaúčtování → úschova. <strong>Doklady a knihy 5 let, účetní závěrka 10 let</strong>, daňové doklady 10 let.</li>
+<li><strong>Účetní závěrka</strong> = rozvaha + výkaz zisku a ztráty + příloha. <strong>Inventarizace</strong> ověřuje, zda skutečný stav = stav v účetnictví.</li>
+<li><strong>Účetní zásady</strong>: akruální princip (věcná a časová souvislost – náklad a výnos do období, se kterým souvisí, ne kdy se platí), účetní jednotka jako celek, neomezené trvání (going concern), pravidelné období, objektivita (věrný obraz), srovnatelnost (stálost metod), historické ceny, <strong>opatrnost</strong> (majetek co nejníže, závazky co nejvýše, rizika hned, zisk až jistý), podstatnost, <strong>zákaz kompenzace</strong> (pohledávky a závazky ani náklady a výnosy se nezapočítávají).</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-3" class="sec"><div class="sh"><h3>3. Daňová evidence</h3><label class="done"><input type="checkbox" data-sec="uce-3"> Přečteno</label></div><ul>
+<li><strong>HV v daňové evidenci = příjmy − výdaje.</strong> <strong>HV v účetnictví = výnosy − náklady.</strong></li>
+<li><strong>Daňově uznatelný výdaj</strong>: vynaložen na dosažení, zajištění a udržení příjmů, dokložen dokladem, zaplacen v roce uplatnění.</li>
+</ul>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Daňové (zahrnuje se do ZD)</th>
+<th>Nedaňové (nezahrnuje se)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tržby za zboží, výrobky, služby</td>
+<td>osobní vklad podnikatele</td>
+</tr>
+<tr>
+<td>přijatá záloha od odběratele</td>
+<td>přijatý úvěr nebo půjčka</td>
+</tr>
+<tr>
+<td>připsaný úrok z účtu</td>
+<td>přijatá DPH, peněžní dar</td>
+</tr>
+<tr>
+<td>nákup materiálu, zboží, energie, služby</td>
+<td>splátka úvěru / půjčky</td>
+</tr>
+<tr>
+<td>zaplacené úroky z úvěru, bankovní poplatky</td>
+<td>výběr pro osobní potřebu</td>
+</tr>
+<tr>
+<td>poskytnutá záloha dodavateli</td>
+<td>nákup DHM nad 80 000 Kč (jen odpisy)</td>
+</tr>
+<tr>
+<td>reklama, mzdy zaměstnanců</td>
+<td>reprezentace (pohoštění partnerů), daň z příjmů</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Paušální výdaje</strong> (% z příjmů, bez dokladů): 80 % zemědělství a řemeslné živnosti, 60 % ostatní živnosti, 40 % svobodná povolání, 30 % pronájem.</li>
+<li><strong>DHM</strong> = použitelnost nad 1 rok a cena nad <strong>80 000 Kč</strong> (od 2020). Pozemky a umělecká díla vždy (bez ohledu na cenu). DNM: limit stanoví účetní jednotka.</li>
+<li><strong>Kdy se OSVČ stane účetní jednotkou</strong> (model z pracovního listu): obrat překročí 25 mil. v roce X → rok X+1 = první rok účetní jednotky (přechodný) → od X+2 povinné účetnictví. Přesně 25 mil. není překročení.</li>
+</ul>
+<p><strong>Řešený příklad – peněžní deník (z Moodlu):</strong> osobní vklad 5 000 (nedaňový příjem), tržba 43 000 (daňový), úvěr 80 000 (nedaňový), úrok 100 (daňový), záloha od odběratele 6 000 (daňový), materiál 2 000 (daňový výdaj), splátka úvěru 3 000 (nedaňový), úrok z úvěru 200 (daňový), záloha ČEZ 4 000 (daňový), poplatky 400 (daňový), výběr pro sebe 5 000 (nedaňový), počítač 92 000 (nedaňový – nad 80 000), program 42 000 (daňový – pod limitem DNM 100 000), půjčka 6 000 (nedaňový příjem), úhrada faktury 10 000 (daňový), reklama 2 000 (daňový), splátka půjčky 6 000 (nedaňový)… <strong>Daňové příjmy 59 100 − daňové výdaje 50 600 = základ daně 8 500 Kč.</strong></p><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-4" class="sec"><div class="sh"><h3>4. Majetek a zdroje financování (rozvaha)</h3><label class="done"><input type="checkbox" data-sec="uce-4"> Přečteno</label></div><ul>
+<li><strong>Aktiva</strong> = majetek (jaký máme). <strong>Pasiva</strong> = zdroje krytí (odkud ho máme). <strong>AKTIVA = PASIVA.</strong></li>
+<li>Aktiva: <strong>dlouhodobý majetek</strong> (nehmotný – software, patenty; hmotný – budovy, stroje nad 80 000, pozemky, umělecká díla; finanční – CP nad 1 rok) a <strong>oběžný majetek</strong> (zásoby – materiál, zboží, výrobky, nedokončená výroba; pohledávky – odběratelé, poskytnuté zálohy a půjčky; krátkodobý finanční majetek – pokladna, účty, ceniny, CP do 1 roku).</li>
+<li>Pasiva: <strong>vlastní kapitál</strong> (základní kapitál, fondy ze zisku, HV, HV minulých let) a <strong>cizí zdroje</strong> (závazky – dodavatelé, zaměstnanci, dlužné daně a pojistné, přijaté zálohy; úvěry; rezervy).</li>
+<li>Pozor: <strong>základní kapitál ≠ vlastní kapitál</strong>. ZK je jen část VK. Ztráta se uvádí v pasivech se znaménkem mínus.</li>
+<li><strong>Oprávky</strong> (skupiny 07, 08) snižují hodnotu majetku, mají zůstatek na straně Dal, ale patří do aktiv. Netto = brutto − korekce.</li>
+<li>Rozvahy: zahajovací (vznik), počáteční (1. 1.), konečná (31. 12.), mimořádná, průběžná.</li>
+</ul>
+<p><strong>Řešený příklad – sestavení rozvahy (tis. Kč):</strong> software 120, auto 150, počítač 49, pozemek 10 → dlouhodobý majetek 329. Materiál 65 + výrobky 120 = zásoby 185; odběratelé 50 + zálohy na plyn 20 = pohledávky 70; pokladna 20 + účty 60 + kolky 8 = 88 → oběžná aktiva 343. <strong>Aktiva 672.</strong> Pasiva: ZK 330 + rezervní fond 25 + nerozdělený zisk 53 = VK 408; dodavatelé 67 + zálohy 20 + mzdy 28 + daň 16 + ZP 73 = krátkodobé závazky 204; úvěr 60 → cizí zdroje 264. <strong>Pasiva 672.</strong></p><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-5" class="sec"><div class="sh"><h3>5. Účty a jejich strany</h3><label class="done"><input type="checkbox" data-sec="uce-5"> Přečteno</label></div><div class="scroll"><table>
+<thead>
+<tr>
+<th>Typ účtu</th>
+<th>MD (Má dáti, vlevo)</th>
+<th>Dal (vpravo)</th>
+<th>Poč. stav</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktivní (tř. 0, 1, 2, 3)</td>
+<td>PS, přírůstky</td>
+<td>úbytky</td>
+<td>na MD</td>
+</tr>
+<tr>
+<td>Pasivní (tř. 2, 3, 4)</td>
+<td>úbytky</td>
+<td>PS, přírůstky</td>
+<td>na Dal</td>
+</tr>
+<tr>
+<td>Nákladové (tř. 5)</td>
+<td>náklady</td>
+<td>snížení nákladů</td>
+<td>nemají</td>
+</tr>
+<tr>
+<td>Výnosové (tř. 6)</td>
+<td>snížení výnosů</td>
+<td>výnosy</td>
+<td>nemají</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Třída 7 = závěrkové (701 Počáteční účet rozvažný, 702 Konečný účet rozvažný, 710 Účet zisků a ztrát) a podrozvahové. Třídy 8, 9 = vnitropodnikové.</li>
+<li><strong>4 typy změn v rozvaze</strong>: A+ A− (nákup kolků v hotovosti), A+ P+ (materiál na fakturu, přijatý úvěr), A− P− (úhrada faktury dodavateli, výplata mezd), P+ P− (z úvěru zaplacena faktura dodavateli). Součet aktiv a pasiv se mění jen u A+P+ a A−P−.</li>
+<li><strong>Otevírání účtů</strong>: aktiva MD / 701, pasiva 701 / Dal (oprávky obráceně). <strong>Uzavírání</strong>: aktiva 702 / Dal, pasiva MD / 702, náklady 710 / Dal, výnosy MD / 710.</li>
+<li><strong>491 Účet individuálního podnikatele</strong>: vklady a výběry podnikatele (výběr z účtu pro sebe 491/221, vklad pozemku 031/491).</li>
+</ul>
+<p><strong>Nejčastější účty:</strong> 013 software, 022 stroje a auta, 031 pozemky, 112 materiál na skladě, 132 zboží, 211 pokladna, 213 ceniny, 221 bankovní účty, 231 krátkodobé úvěry, 311 odběratelé, 314 poskytnuté zálohy, 321 dodavatelé, 324 přijaté zálohy, 331 zaměstnanci, 335 pohledávky za zaměstnanci, 343 DPH, 411 základní kapitál, 501 spotřeba materiálu, 502 energie, 504 prodané zboží, 511 opravy, 512 cestovné, 513 reprezentace, 518 ostatní služby, 521 mzdy, 562 úroky, 568 ostatní finanční náklady (poplatky), 601 tržby za výrobky, 602 tržby za služby, 604 tržby za zboží, 662 úroky.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Účetní případ</th>
+<th>MD</th>
+<th>Dal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Přijatá faktura za materiál</td>
+<td>112</td>
+<td>321</td>
+</tr>
+<tr>
+<td>Přijatá faktura za plyn / elektřinu</td>
+<td>502</td>
+<td>321</td>
+</tr>
+<tr>
+<td>Z účtu uhrazena faktura dodavateli</td>
+<td>321</td>
+<td>221</td>
+</tr>
+<tr>
+<td>Výběr hotovosti z účtu do pokladny</td>
+<td>211</td>
+<td>221</td>
+</tr>
+<tr>
+<td>Výdej materiálu do spotřeby</td>
+<td>501</td>
+<td>112</td>
+</tr>
+<tr>
+<td>Hotově zaplacené poštovné</td>
+<td>518</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Vystavená faktura za služby</td>
+<td>311</td>
+<td>602</td>
+</tr>
+<tr>
+<td>Vystavená faktura za výrobky</td>
+<td>311</td>
+<td>601</td>
+</tr>
+<tr>
+<td>Odběratel zaplatil na účet</td>
+<td>221</td>
+<td>311</td>
+</tr>
+<tr>
+<td>Za hotové koupeno auto za 400 000 Kč (DHM)</td>
+<td>022</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Nákup kolků / stravenek v hotovosti</td>
+<td>213</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Zaúčtování mezd</td>
+<td>521</td>
+<td>331</td>
+</tr>
+<tr>
+<td>Výplata mezd v hotovosti</td>
+<td>331</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Přijatý úvěr na účet</td>
+<td>221</td>
+<td>231</td>
+</tr>
+<tr>
+<td>Splátka úvěru z účtu</td>
+<td>231</td>
+<td>221</td>
+</tr>
+<tr>
+<td>Banka srazila úrok z úvěru</td>
+<td>562</td>
+<td>221</td>
+</tr>
+<tr>
+<td>Banka srazila poplatky</td>
+<td>568</td>
+<td>221</td>
+</tr>
+<tr>
+<td>Banka připsala úrok</td>
+<td>221</td>
+<td>662</td>
+</tr>
+<tr>
+<td>Pohoštění obchodních partnerů v hotovosti</td>
+<td>513</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Záloha zaměstnanci na cestu</td>
+<td>335</td>
+<td>211</td>
+</tr>
+<tr>
+<td>Od odběratele přijatá záloha na účet</td>
+<td>221</td>
+<td>324</td>
+</tr>
+<tr>
+<td>Vklad hotovosti na účet</td>
+<td>221</td>
+<td>211</td>
+</tr>
+</tbody>
+</table></div><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-6" class="sec"><div class="sh"><h3>6. DPH</h3><label class="done"><input type="checkbox" data-sec="uce-6"> Přečteno</label></div><ul>
+<li>DPH je daň <strong>nepřímá</strong>, nese ji konečný spotřebitel; účet <strong>343</strong>. Sazby: <strong>21 %</strong> základní, <strong>12 %</strong> snížená.</li>
+<li>Plátcem se podnikatel stane, když obrat za kalendářní rok překročí <strong>2 000 000 Kč</strong> (od 1. 1. následujícího roku); při překročení <strong>2 536 500 Kč</strong> (100 000 EUR) už následující den.</li>
+<li>Zdaňovací období měsíc nebo čtvrtletí, přiznání do <strong>25. dne</strong> následujícího měsíce. Kontrolní hlášení od 2016 (plnení nad 10 000 Kč). Reverse charge = daň přiznává odběratel (zlato, stavební práce, odpad).</li>
+<li>Příklad: materiál 10 000 + DPH 21 % na fakturu → 112/321 10 000 a 343/321 2 100, celkem závazek 12 100.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section><section id="uce-7" class="sec"><div class="sh"><h3>7. Náklady a výnosy</h3><label class="done"><input type="checkbox" data-sec="uce-7"> Přečteno</label></div><ul>
+<li><strong>Náklad</strong> vzniká spotřebou (výdej materiálu, přijatá faktura za službu), ne platbou. Nákup materiálu na sklad není náklad, nákladem se stane až výdejem do spotřeby. Náklady účtujeme na <strong>MD</strong>.</li>
+<li><strong>Výnos</strong> vzniká vystavením faktury nebo prodejem za hotové. Přijatá záloha není výnos. Výnosy účtujeme na <strong>Dal</strong>.</li>
+<li>Náklady: přímé (jednicové) / nepřímé (režijní); fixní / variabilní; daňově uznatelné / neuznatelné (reprezentace 513, pokuty FU 545, tvorba ostatních rezerv 554).</li>
+<li><strong>HV</strong>: provozní = výnosy 60–65 − náklady 50–55; finanční = výnosy 66 − náklady 56–57. Zisk na účtu 710 je na straně MD (jako rozdíl), ztráta na Dal.</li>
+</ul><p class="pr"><a class="btn ghost" href="trenink.html#UCE">Procvičit účetnictví</a></p></section></div><div class="subj" id="s-CHY"><h2><span class="pill CHY" style="font-size:16px;vertical-align:middle">Chytáky a čísla k zapamatování</span></h2><section id="chy" class="sec"><div class="sh"><h3>Chytáky a čísla k zapamatování</h3><label class="done"><input type="checkbox" data-sec="chy"> Přečteno</label></div><p>Tohle jsou místa, kde se v testech nejčastěji chybuje.</p>
+<ul>
+<li><strong>Ekonomie vs. ekonomika</strong> – teorie vs. praxe.</li>
+<li><strong>Plat vs. mzda vs. odměna</strong> – stát / soukromý zaměstnavatel / dohody.</li>
+<li><strong>Posun křivky vs. pohyb po křivce</strong> – cena hýbe bodem po křivce, ostatní faktory posouvají celou křivku.</li>
+<li><strong>Komplement zdraží → poptávka po mém zboží klesá</strong> (benzín zdraží → méně aut). <strong>Substitut zlevní → poptávka klesá.</strong></li>
+<li><strong>Nekalá soutěž vs. omezování soutěže</strong> – nepoctivé jednání vs. kartely a dominance (ÚOHS).</li>
+<li><strong>Monopol vs. monopson</strong> – jeden prodejce vs. jeden kupující.</li>
+<li><strong>Ohlašovací živnost</strong> se provozuje od ohlášení, <strong>koncesovaná</strong> až od koncesní listiny.</li>
+<li><strong>PO vzniká zápisem do OR</strong>, ne podpisem smlouvy (tou se zakládá).</li>
+<li><strong>Komplementář ručí neomezeně, komanditista omezeně.</strong></li>
+<li><strong>Příjem ≠ výnos, výdaj ≠ náklad.</strong> Úvěr = příjem, ne výnos. Nákup stroje = výdaj, ne náklad. Odpis = náklad, ne výdaj.</li>
+<li><strong>Platnost vs. účinnost</strong> – vyhlášení ve Sbírce vs. povinnost dodržovat.</li>
+<li><strong>Kogentní vs. dispozitivní</strong> – nelze se odchýlit vs. platí, když se nedohodnete jinak.</li>
+<li><strong>Taxativní vs. demonstrativní</strong> – uzavřený výčet vs. „zejména“.</li>
+<li><strong>Senát nelze rozpustit</strong>, sněmovnu ano.</li>
+<li><strong>Veto prezidenta nelze u ústavního zákona.</strong></li>
+<li><strong>Ústavní soud není součástí soustavy obecných soudů.</strong></li>
+<li><strong>Do SJM nepatří dar ani dědictví</strong> jednoho z manželů.</li>
+<li><strong>Osvojení ruší vazby k původní rodině, pěstounství ne.</strong></li>
+<li><strong>Základní kapitál ≠ vlastní kapitál.</strong></li>
+<li><strong>Oprávky jsou v aktivech, i když mají zůstatek na Dal.</strong></li>
+<li><strong>Náklady na MD, výnosy na Dal</strong>, aktiva přibývají na MD, pasiva na Dal.</li>
+</ul>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Číslo</th>
+<th>Co znamená</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1943</td>
+<td>Maslowova pyramida</td>
+</tr>
+<tr>
+<td>1494</td>
+<td>Luca Pacioli – podvojné účetnictví</td>
+</tr>
+<tr>
+<td>18 let</td>
+<td>živnost, aktivní volební právo</td>
+</tr>
+<tr>
+<td>21 / 40 let</td>
+<td>poslanec / senátor, prezident, ombudsman, ústavní soudce</td>
+</tr>
+<tr>
+<td>200 / 81</td>
+<td>poslanců / senátorů</td>
+</tr>
+<tr>
+<td>4 / 6 / 5 let</td>
+<td>sněmovna / Senát / prezident</td>
+</tr>
+<tr>
+<td>5 %</td>
+<td>hranice pro vstup do sněmovny</td>
+</tr>
+<tr>
+<td>67 / 101 / 120</td>
+<td>kvórum / většina všech / 3/5 všech poslanců</td>
+</tr>
+<tr>
+<td>15 dní</td>
+<td>veto, odvolání, živnostenský list, daňový doklad</td>
+</tr>
+<tr>
+<td>30 dní</td>
+<td>Senát mlčí = schváleno; vláda žádá o důvěru; interpelace</td>
+</tr>
+<tr>
+<td>15 / 10 let</td>
+<td>Ústavní soud: soudců / funkční období</td>
+</tr>
+<tr>
+<td>1 000 Kč</td>
+<td>poplatek za živnost</td>
+</tr>
+<tr>
+<td>1 Kč</td>
+<td>základní kapitál s. r. o.</td>
+</tr>
+<tr>
+<td>2 mil. Kč / 80 000 EUR</td>
+<td>základní kapitál a. s.</td>
+</tr>
+<tr>
+<td>21 % / 15 %</td>
+<td>daň PO / srážková daň a daň FO</td>
+</tr>
+<tr>
+<td>25 mil. Kč</td>
+<td>obrat, kdy OSVČ musí vést účetnictví</td>
+</tr>
+<tr>
+<td>80 000 Kč</td>
+<td>hranice DHM</td>
+</tr>
+<tr>
+<td>2 mil. Kč</td>
+<td>obrat pro registraci k DPH</td>
+</tr>
+<tr>
+<td>21 % / 12 %</td>
+<td>sazby DPH</td>
+</tr>
+<tr>
+<td>5 / 10 let</td>
+<td>úschova dokladů / účetní závěrky</td>
+</tr>
+<tr>
+<td>300 / 180 dnů</td>
+<td>domněnky otcovství</td>
+</tr>
+<tr>
+<td>16 let</td>
+<td>sňatek se souhlasem soudu; věkový rozdíl při osvojení</td>
+</tr>
+</tbody>
+</table></div></section></div>
+<p class="mut" style="font-size:13px">Marketing byl v Moodlu jen jako drobný tisk dvou stran na list, proto je ta kapitola stručnější a drží se standardního učiva. Hranice kategorií účetních jednotek jsou podle podkladů z Moodlu (novela od 2024 je zvýšila).</p></main></div>
+</div>
+<script>
+{
+let rd={};try{rd=JSON.parse(localStorage.getItem("pp_read")||"{}")}catch(e){}
+const sync=()=>{
+  const boxes=[...document.querySelectorAll("input[data-sec]")];
+  boxes.forEach(b=>b.checked=!!rd[b.dataset.sec]);
+  document.querySelectorAll(".toc a").forEach(a=>a.classList.toggle("read",!!rd[a.dataset.sec]));
+  document.getElementById("cnt").textContent="Přečteno "+boxes.filter(b=>b.checked).length+" / "+boxes.length;
+};
+document.addEventListener("change",e=>{const b=e.target.closest("input[data-sec]");if(!b)return;rd[b.dataset.sec]=b.checked;try{localStorage.setItem("pp_read",JSON.stringify(rd))}catch(_){}sync()});
+sync();
+}
+</script></body></html>
