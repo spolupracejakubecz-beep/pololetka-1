@@ -32,16 +32,23 @@
 .score div{background:var(--bg);border-radius:12px;padding:16px;text-align:center}
 .score b{display:block;font-size:clamp(40px,8vw,64px);line-height:1;font-weight:900}
 .miss{padding:10px 0;border-bottom:1px solid var(--line)}
+.pinbig{font-size:clamp(44px,10vw,76px);font-weight:900;letter-spacing:.06em;line-height:1;margin:8px 0}
+.joinrow{display:flex;gap:10px;flex-wrap:wrap}.joinrow input{flex:1;min-width:160px;max-width:260px;letter-spacing:.1em}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.stat span{font-weight:800;padding:6px 12px;border-radius:999px;background:var(--bg)}.stat span.on{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.err{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad);font-weight:700;border-radius:12px;padding:12px 16px;margin-bottom:12px}
+.log div{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line);font-weight:600}
+.wait{color:var(--mut);font-weight:700;margin-top:12px}
 @media(max-width:520px){.names{grid-template-columns:1fr}}
 </style></head><body>
 <header class="nav"><div class="in"><a class="logo" href="index.html">Pololetka<span>1.P</span></a><a class="l" href="index.html">Plán</a><a class="l" href="ucivo.html">Učivo</a><a class="l" href="trenink.html">Trénink</a><a class="l" href="dvojice.html" aria-current="page">Ve dvou</a><a class="l" href="hra.html">Hra</a></div></header>
 <div class="wrap" style="max-width:860px">
 <h1>Ve dvou</h1>
-<p class="sub">Oba si přečtete stejnou kapitolu, pak se střídáte: jeden čte otázku i s možnostmi, druhý odpovídá. Zkoušející vidí správnou odpověď a ťukne, co druhý řekl. Na konci rovnou trénink z té kapitoly.</p>
+<p class="sub">Oba si přečtete stejnou kapitolu, pak se střídáte: jeden zkouší, druhý odpovídá. Můžete být každý na svém zařízení (spojíte se PINem), nebo oba u jednoho. Na konci rovnou trénink z té kapitoly.</p>
 <div class="steps" id="steps"><span>1. Kapitola</span><span>2. Čtení</span><span>3. Zkoušení</span><span>4. Výsledek a trénink</span></div>
 <div id="app"></div>
 </div>
 <script src="data.js"></script>
+<script src="vendor/peerjs.min.js"></script>
 <script>
 {
 const Q=window.Q,SECN=window.SECN;
@@ -50,39 +57,229 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const store=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
 const NM={eko:"Ekonomika",pra:"Právo",uce:"Účetnictví"};
-let cfg=Object.assign({a:"Honza",b:"",sec:"",per:5},store("duo_cfg")||{});
-let G=null;
+const PREFIX="pololetka1p-duo-";
+let cfg=Object.assign({a:"Honza",b:"",me:"",sec:"",per:5,mode:"net"},store("duo_cfg")||{});
+if(!cfg.me)cfg.me=cfg.a||"";
+let G=null,O=null;
 const step=n=>document.querySelectorAll("#steps span").forEach((s,i)=>s.classList.toggle("on",i===n-1));
 const count=sec=>Q.filter(q=>q[5]===sec).length;
 const hist=store("duo_hist")||{};
-function setup(){
+const saveCfg=()=>store("duo_cfg",cfg);
+
+/* ---------- společné ---------- */
+// otázky pro kolo: [{k, p}] – index do Q a pořadí možností
+function pickList(sec,per){
+  const need=per*2,ids=Q.map((q,k)=>k);
+  let list=shuf(ids.filter(k=>Q[k][5]===sec)).slice(0,need);
+  if(list.length<need){const sub=sec.slice(0,3).toUpperCase();list=list.concat(shuf(ids.filter(k=>Q[k][0]===sub&&Q[k][5]!==sec)).slice(0,need-list.length))}
+  return list.map(k=>({k,p:shuf([0,1,2,3])}));
+}
+function expand(it){
+  const q=Q[it.k];if(!q)return null;
+  const p=Array.isArray(it.p)&&it.p.length===4&&[0,1,2,3].every(n=>it.p.includes(n))?it.p:[0,1,2,3];
+  return{k:it.k,s:q[0],q:q[1],o:p.map(i=>q[2][i]),c:p.indexOf(q[3]),e:q[4],sec:q[5]};
+}
+function recordMine(x,good){
+  try{const S=store("pp_stats")||{};(S[x.s]=S[x.s]||[]).push(good?1:0);S[x.s]=S[x.s].slice(-200);store("pp_stats",S)}catch(e){}
+  try{const w=new Set(store("pp_wrong")||[]);good?w.delete(x.k):w.add(x.k);store("pp_wrong",[...w])}catch(e){}
+}
+function logRound(sec,me,other,sm,so,n){
+  hist[sec]=1;store("duo_hist",hist);
+  const rd=store("pp_read")||{};rd[sec]=true;store("pp_read",rd);
+  const L=store("duo_log")||[];L.push({d:Date.now(),sec,me,other,sm,so,n});store("duo_log",L.slice(-60));
+}
+function logHtml(){
+  const L=(store("duo_log")||[]).slice(-8).reverse();
+  if(!L.length)return"";
+  return`<div class="card" style="margin-top:22px"><h2>Vaše poslední kola</h2><div class="log">${L.map(r=>{const d=new Date(r.d);return`<div><span>${d.getDate()}. ${d.getMonth()+1}. · ${esc(SECN[r.sec]||"")}</span><span>${esc(r.me)} ${r.sm}/${r.n} · ${esc(r.other)} ${r.so}/${r.n}</span></div>`}).join("")}</div></div>`;
+}
+function chapters(sel){
+  return`<div class="chs" id="chs">${["eko","pra","uce"].map(g=>`<div class="g"><span class="pill ${g.toUpperCase()}" style="align-self:flex-start">${NM[g]}</span>${Object.keys(SECN).filter(k=>k.startsWith(g)).map(k=>`<button class="ch" data-sec="${k}" aria-pressed="${sel===k}"><span>${esc(SECN[k])}${hist[k]?' ✓':''}</span><small>${count(k)} otázek</small></button>`).join("")}</div>`).join("")}</div>`;
+}
+const perSeg=()=>`<div class="seg" id="per">${[3,5,8].map(n=>`<button data-n="${n}" aria-pressed="${cfg.per===n}">${n}</button>`).join("")}</div>`;
+const modeBar=()=>`<div class="seg" id="mode" style="margin-bottom:16px"><button data-m="net" aria-pressed="${cfg.mode==="net"}">Každý na svém zařízení</button><button data-m="one" aria-pressed="${cfg.mode==="one"}">Oba u jednoho zařízení</button></div>`;
+function bindMode(){app.querySelector("#mode").onclick=e=>{const b=e.target.closest("button");if(b){stopNet();cfg.mode=b.dataset.m;saveCfg();setup()}}}
+function setup(){cfg.mode==="one"?setupOne():setupNet()}
+
+/* ---------- ONLINE: každý na svém zařízení ---------- */
+function stopNet(){if(O){O.closing=true;try{O.peer&&O.peer.destroy()}catch(e){}}O=null}
+function setupNet(pin,msg){
   step(1);
-  const groups=["eko","pra","uce"].map(g=>`<div class="g"><span class="pill ${g.toUpperCase()}" style="align-self:flex-start">${NM[g]}</span>${Object.keys(SECN).filter(k=>k.startsWith(g)).map(k=>`<button class="ch" data-sec="${k}" aria-pressed="${cfg.sec===k}"><span>${esc(SECN[k])}${hist[k]?' ✓':''}</span><small>${count(k)} otázek</small></button>`).join("")}</div>`).join("");
-  app.innerHTML=`<div class="card"><h2>Kdo hraje</h2><div class="names"><div><label class="mut" for="na" style="font-weight:700">První</label><input type="text" id="na" value="${esc(cfg.a)}" maxlength="20"></div><div><label class="mut" for="nb" style="font-weight:700">Druhý</label><input type="text" id="nb" value="${esc(cfg.b)}" maxlength="20" placeholder="Spolužák"></div></div>
-  <p class="mut" style="font-weight:700;margin:16px 0 6px">Otázek pro každého</p><div class="seg" id="per">${[3,5,8].map(n=>`<button data-n="${n}" aria-pressed="${cfg.per===n}">${n}</button>`).join("")}</div></div>
-  <h2 style="margin-top:22px">Vyberte kapitolu</h2><div class="chs" id="chs">${groups}</div>
-  <div class="row"><button class="btn" id="go" ${cfg.sec?"":"disabled style='opacity:.5'"}>Pokračovat${cfg.sec?": "+esc(SECN[cfg.sec]):""}</button></div>`;
-  const keep=()=>{cfg.a=app.querySelector("#na").value.trim()||"Hráč 1";cfg.b=app.querySelector("#nb").value.trim()||"Hráč 2";store("duo_cfg",cfg)};
-  app.querySelector("#per").onclick=e=>{const b=e.target.closest("button");if(b){keep();cfg.per=+b.dataset.n;store("duo_cfg",cfg);setup()}};
-  app.querySelector("#chs").onclick=e=>{const b=e.target.closest(".ch");if(b){keep();cfg.sec=b.dataset.sec;store("duo_cfg",cfg);setup();app.querySelector("#go").scrollIntoView({block:"center"})}};
+  app.innerHTML=modeBar()+`<div class="card"><label class="mut" for="me" style="font-weight:700">Tvoje jméno</label><input type="text" id="me" value="${esc(cfg.me)}" maxlength="20" placeholder="Honza" style="max-width:360px;display:block"></div>
+  <div class="card" style="margin-top:16px"><h2>Spolužák už založil zkoušení?</h2>${msg?`<div class="err">${esc(msg)}</div>`:""}<p class="mut">Zadej PIN, který ti poslal.</p><form class="joinrow" id="jf"><input type="text" id="pin" inputmode="numeric" maxlength="7" placeholder="123 456" value="${esc(pin||"")}" autocomplete="off"><button class="btn">Připojit se</button></form></div>
+  <div class="card" style="margin-top:16px"><h2>Nebo ho založ ty</h2><p class="mut" style="margin-top:0">Vyber kapitolu, dostaneš PIN a pošleš ho spolužákovi.</p><p class="mut" style="font-weight:700;margin:12px 0 6px">Otázek pro každého</p>${perSeg()}</div>
+  <h2 style="margin-top:22px">Kapitola</h2>${chapters(cfg.sec)}
+  <div class="row"><button class="btn" id="go" ${cfg.sec?"":"disabled style='opacity:.5'"}>Vytvořit PIN${cfg.sec?": "+esc(SECN[cfg.sec]):""}</button></div>${logHtml()}`;
+  bindMode();
+  const keep=()=>{cfg.me=app.querySelector("#me").value.trim();saveCfg()};
+  app.querySelector("#per").onclick=e=>{const b=e.target.closest("button");if(b){keep();cfg.per=+b.dataset.n;saveCfg();setupNet(app.querySelector("#pin").value)}};
+  app.querySelector("#chs").onclick=e=>{const b=e.target.closest(".ch");if(b){keep();cfg.sec=b.dataset.sec;saveCfg();setupNet(app.querySelector("#pin").value);app.querySelector("#go").scrollIntoView({block:"center"})}};
+  const needName=()=>{keep();if(!cfg.me){const i=app.querySelector("#me");i.focus();i.style.borderColor="var(--bad)";return true}};
+  app.querySelector("#go").onclick=()=>{if(needName())return;hostOpen(0)};
+  app.querySelector("#jf").onsubmit=e=>{e.preventDefault();const p=app.querySelector("#pin").value.replace(/\D/g,"");if(needName())return;if(p.length!==6)return setupNet(p,"PIN má 6 číslic.");joinNet(p)};
+  if(pin)app.querySelector(cfg.me?"#pin":"#me").focus();
+}
+function waitCard(t,sub){app.innerHTML=`<div class="card"><h2>${t}</h2><p class="mut">${sub||""}</p></div>`}
+function netErr(m,pin){stopNet();setupNet(pin||"",m)}
+function hostOpen(tries){
+  stopNet();const pin=String(100000+Math.floor(Math.random()*900000));
+  waitCard("Vytvářím PIN…","Připojuji se k serveru.");
+  const peer=new Peer(PREFIX+pin,window.PEER_OPTS||{});
+  O={role:"host",me:cfg.me,pin,sec:cfg.sec,per:cfg.per,ready:{},peer};
+  const me=O;
+  peer.on("open",()=>{if(O===me)hostWait()});
+  peer.on("error",err=>{if(O!==me)return;if(err.type==="unavailable-id"&&tries<3)return hostOpen(tries+1);if(me.conn&&me.conn.open)return;netErr("PIN se nepodařilo vytvořit ("+(err.type||err)+"). Zkontroluj internet a zkus to znovu.")});
+  peer.on("connection",conn=>{
+    if(O!==me)return;
+    if(me.conn&&me.conn.open){conn.on("open",()=>{try{conn.send({t:"full"})}catch(e){}setTimeout(()=>conn.close(),400)});return}
+    me.conn=conn;conn.on("data",d=>{if(O===me)onData(d)});conn.on("close",()=>{if(O===me&&me.conn===conn)lost()});
+  });
+}
+const duoLink=()=>location.origin+location.pathname+"#duo-"+O.pin;
+function hostWait(){
+  step(1);
+  app.innerHTML=`<div class="card" style="text-align:center"><p class="mut" style="font-weight:700;margin:0">Pošli spolužákovi PIN</p><div class="pinbig">${O.pin.slice(0,3)} ${O.pin.slice(3)}</div>
+  <p class="mut" style="word-break:break-all">nebo odkaz: <b>${esc(duoLink())}</b></p><div class="row" style="justify-content:center"><button class="btn ghost" id="cp">Zkopírovat odkaz</button><button class="btn ghost" id="x">Zrušit</button></div>
+  <p class="wait">Kapitola: ${esc(SECN[O.sec])} · ${O.per} otázek pro každého<br>Čekám, až se spolužák připojí…</p></div>`;
+  app.querySelector("#cp").onclick=async e=>{try{await navigator.clipboard.writeText(duoLink());e.target.textContent="Zkopírováno"}catch(_){e.target.textContent="Zkopíruj odkaz ručně"}};
+  app.querySelector("#x").onclick=()=>{stopNet();setupNet()};
+}
+function joinNet(pin){
+  stopNet();waitCard("Připojuji se…","Hledám zkoušení s PINem "+pin.slice(0,3)+" "+pin.slice(3)+".");
+  const peer=new Peer(window.PEER_OPTS||{});
+  O={role:"guest",me:cfg.me,pin,ready:{},peer};const me=O;
+  const to=setTimeout(()=>{if(O===me&&!me.ok)netErr("Zkoušení s tímhle PINem jsem nenašel. Zkontroluj PIN.",pin)},12000);
+  peer.on("error",err=>{if(O!==me)return;clearTimeout(to);if(me.ok&&err.type!=="peer-unavailable")return lost();if(!me.ok)netErr(err.type==="peer-unavailable"?"Zkoušení s tímhle PINem neexistuje nebo už skončilo.":"Chyba spojení ("+(err.type||err)+").",pin)});
+  peer.on("open",()=>{
+    if(O!==me)return;
+    const c=peer.connect(PREFIX+pin,{reliable:true});me.conn=c;
+    c.on("open",()=>c.send({t:"join",name:me.me}));
+    c.on("data",d=>{if(O===me){clearTimeout(to);onData(d)}});
+    c.on("close",()=>{if(O===me)me.ok?lost():netErr("Spojení se nepodařilo.",pin)});
+  });
+}
+function lost(){
+  if(!O||O.closing)return;const done=O.finished,other=O.other||"Spolužák";stopNet();step(0);
+  app.innerHTML=`<div class="card"><h2>Spojení se přerušilo</h2><p>${esc(other)} se odpojil${done?". Výsledek kola už máte oba uložený.":". Odpovědi, které jsi stihl, máš uložené ve statistikách a v chybách."}</p><div class="row"><button class="btn" id="b">Zpět na začátek</button></div></div>`;
+  app.querySelector("#b").onclick=()=>setupNet();
+}
+const tx=m=>{try{O&&O.conn&&O.conn.open&&O.conn.send(m)}catch(e){}};
+setInterval(()=>{if(!O||!O.ok||O.closing)return;tx({t:"ping"});if(Date.now()-(O.last||Date.now())>15000)lost()},4000);
+function onData(d){
+  if(!d||typeof d!=="object")return;
+  O.last=Date.now();
+  if(d.t==="ping")return;
+  if(d.t==="bye"){O.ok=true;return lost()}
+  const host=O.role==="host";
+  if(host&&d.t==="join"){
+    let n=String(d.name||"Spolužák").trim().slice(0,20)||"Spolužák";if(n===O.me)n+=" 2";
+    O.other=n;O.ok=true;O.last=Date.now();sendCfg();netRead();
+  }else if(!host&&d.t==="full"){netErr("V tomhle zkoušení už jsou dva.",O.pin)}
+  else if(!host&&d.t==="cfg"){
+    if(!SECN[d.sec])return;O.ok=true;O.other=String(d.name||"Spolužák").slice(0,20);O.sec=d.sec;O.per=[3,5,8].includes(d.per)?d.per:5;O.ready={};O.finished=false;netRead();
+  }else if(d.t==="ready"){O.ready.other=true;if(host)maybeStart();if(O.view==="read")readStatus()}
+  else if(!host&&d.t==="qs"&&Array.isArray(d.qs)){
+    const qs=d.qs.slice(0,16).map(expand).filter(Boolean);if(!qs.length)return;
+    beginRound(qs);
+  }else if(host&&d.t==="ans"&&d.i===O.i){hostAnswer(+d.j)}
+  else if(!host&&d.t==="res"&&d.i===O.i&&O.res[O.i]===undefined){O.res[O.i]=+d.j;netJudge(+d.j)}
+  else if(host&&d.t==="next"&&d.i===O.i&&O.res[O.i]!==undefined){advance()}
+  else if(!host&&d.t==="go"&&d.i===O.i+1){O.i=d.i;O.i>=O.qs.length?netResult():netAsk()}
+  else if(!host&&d.t==="pick"){O.view="pick";step(1);waitCard(esc(O.other)+" vybírá další kapitolu…","Jakmile vybere, objeví se ti tady.")}
+}
+function sendCfg(){tx({t:"cfg",name:O.me,sec:O.sec,per:O.per})}
+function netRead(){
+  step(2);O.view="read";O.ready={};
+  app.innerHTML=`<div class="card"><p class="mut" style="font-weight:700;margin:0">Spojeno: ${esc(O.me)} a ${esc(O.other)}</p><h2>${esc(SECN[O.sec])}</h2>
+  <p>Každý si teď kapitolu přečte na svém zařízení. Počítejte 10–15 minut a dávejte pozor na čísla, výčty a rozdíly mezi pojmy. Zkoušení začne, až budete připravení oba.</p>
+  <div class="row"><a class="btn ghost" href="ucivo.html#${O.sec}" target="_blank" rel="noopener">Otevřít kapitolu v nové záložce</a><button class="btn" id="go">Mám přečteno</button></div>
+  <div class="stat" id="st"></div>${O.role==="host"?`<div class="row"><button class="btn ghost" id="pk">Změnit kapitolu</button></div>`:""}</div>`;
+  readStatus();
+  app.querySelector("#go").onclick=()=>{O.ready.me=true;tx({t:"ready"});readStatus();if(O.role==="host")maybeStart()};
+  const pk=app.querySelector("#pk");if(pk)pk.onclick=netPick;
+}
+function readStatus(){
+  const st=app.querySelector("#st");if(!st)return;
+  st.innerHTML=`<span class="${O.ready.me?"on":""}">${esc(O.me)}: ${O.ready.me?"připraven ✓":"čte"}</span><span class="${O.ready.other?"on":""}">${esc(O.other)}: ${O.ready.other?"připraven ✓":"čte"}</span>`;
+  const b=app.querySelector("#go");if(b&&O.ready.me){b.disabled=true;b.style.opacity=.5;b.textContent=O.ready.other?"Začínáme…":"Čekám na druhého…"}
+}
+function maybeStart(){if(O.ready.me&&O.ready.other)hostRound()}
+function hostRound(){const items=pickList(O.sec,O.per);tx({t:"qs",qs:items});beginRound(items.map(expand))}
+function beginRound(qs){O.qs=qs;O.i=0;O.sc=[0,0];O.miss=[];O.res={};O.finished=false;netAsk()}
+// sudé otázky odpovídá host? Ne: sudé zkouší host a odpovídá host-guest => odpovídá guest
+const iAnswer=()=>(O.role==="host")===(O.i%2===1);
+function netAsk(){
+  step(3);O.view="q";
+  const x=O.qs[O.i],mine=iAnswer(),ex=mine?O.other:O.me,an=mine?O.me:O.other;
+  app.innerHTML=`<div class="card"><div class="who"><span class="badge ${mine?"b2":""}">${esc(ex)}</span><span class="arr">zkouší</span><span class="badge ${mine?"":"b2"}">${esc(an)}</span><span class="mut" style="margin-left:auto;font-size:15px">${O.i+1} / ${O.qs.length}</span></div>
+  <div class="tip">${mine?`Odpovídáš ty. Ťukni na odpověď, ${esc(O.other)} hned uvidí, co jsi vybral.`:`Zkoušíš ty. Přečti otázku nahlas, nebo jen počkej. ${esc(O.other)} odpovídá na svém zařízení. Správná odpověď je označená zeleně jen u tebe; když odpoví nahlas, můžeš ťuknout za něj.`}${x.sec!==O.sec?" (Otázka z jiné kapitoly stejného předmětu.)":""}</div>
+  <p class="q">${esc(x.q)}</p><div class="opts">${x.o.map((o,j)=>`<button class="opt${!mine&&j===x.c?" peek":""}" data-j="${j}"><b>${"ABCD"[j]}</b><span>${esc(o)}</span></button>`).join("")}</div>
+  <div class="row" id="act"><button class="btn ghost" id="idk">${mine?"Nevím":"Neví"}</button>${mine?"":`<span class="wait" style="margin:0">Čekám, až odpoví…</span>`}</div></div>`;
+  const pick=j=>{if(O.res[O.i]!==undefined||O.sent===O.i)return;
+    if(O.role==="host")return hostAnswer(j);
+    O.sent=O.i;tx({t:"ans",i:O.i,j});app.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===j)b.style.borderColor="var(--ink)"});
+    app.querySelector("#act").innerHTML=`<span class="wait" style="margin:0">Odesláno…</span>`};
+  app.querySelector("#idk").onclick=()=>pick(-1);
+  app.querySelector(".opts").onclick=e=>{const b=e.target.closest(".opt");if(b)pick(+b.dataset.j)};
+}
+function hostAnswer(j){if(O.res[O.i]!==undefined||!(j>=-1&&j<=3))return;O.res[O.i]=j;tx({t:"res",i:O.i,j});netJudge(j)}
+function netJudge(j){
+  const x=O.qs[O.i],mine=iAnswer(),an=mine?O.me:O.other,good=j===x.c,idx=mine?0:1; // sc[0]=já, sc[1]=druhý
+  if(good)O.sc[idx]++;else O.miss.push({who:an,x,j});
+  if(mine)recordMine(x,good);
+  app.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;b.classList.remove("peek");b.style.borderColor="";if(k===x.c)b.classList.add("ok");else if(k===j)b.classList.add("bad")});
+  const last=O.i===O.qs.length-1;
+  app.querySelector("#act").outerHTML=`<div class="expl"><strong style="color:${good?"var(--ok)":"var(--bad)"}">${good?(mine?"Správně!":esc(an)+" má pravdu."):(j<0?(mine?"Nevěděl jsi. ":esc(an)+" nevěděl. "):"")+(good?"":"Správně je "+"ABCD"[x.c]+": "+esc(x.o[x.c]))}</strong><br>${esc(x.e)}</div>
+  <div class="row" id="act"><button class="btn" id="nx">${last?"Výsledek":"Další otázka"}</button><span class="mut" style="font-weight:600">Stačí, když klikne jeden z vás.</span></div>`;
+  const b=app.querySelector("#nx");b.focus();
+  b.onclick=()=>{if(O.role==="host")advance();else{tx({t:"next",i:O.i});b.disabled=true;b.style.opacity=.5}};
+}
+function advance(){O.i++;tx({t:"go",i:O.i});O.i>=O.qs.length?netResult():netAsk()}
+function netResult(){
+  step(4);O.view="res";O.finished=true;
+  const n=O.qs.length/2;
+  logRound(O.sec,O.me,O.other,O.sc[0],O.sc[1],n);
+  const host=O.role==="host";
+  app.innerHTML=`<div class="card"><h2>${esc(SECN[O.sec])}: výsledek</h2><div class="score"><div><span class="mut" style="font-weight:700">${esc(O.me)}</span><b>${O.sc[0]}/${n}</b></div><div><span class="mut" style="font-weight:700">${esc(O.other)}</span><b>${O.sc[1]}/${n}</b></div></div>
+  ${missHtml(O.miss)}
+  <p style="margin-top:18px">Výsledek je uložený u vás obou. Tvoje chyby máš v tréninku pod <b>Moje chyby</b>, teď to hned protrénujte každý na svém.</p>
+  <div class="row"><a class="btn" href="trenink.html#sec-${O.sec}">Protrénovat kapitolu</a>${host?`<button class="btn ghost" id="again">Znovu jiné otázky</button><button class="btn ghost" id="other">Jiná kapitola</button>`:""}<button class="btn ghost" id="end">Ukončit</button></div>
+  ${host?"":`<p class="wait">Další kolo spouští ${esc(O.other)}, zůstaň na téhle stránce.</p>`}</div>`;
+  if(host){app.querySelector("#again").onclick=hostRound;app.querySelector("#other").onclick=netPick}
+  app.querySelector("#end").onclick=()=>{stopNet();setupNet()};
+}
+function missHtml(miss){
+  return miss.length?`<h2 style="margin-top:20px">Na tohle se podívejte znovu</h2>${miss.map(m=>`<div class="miss"><b>${esc(m.x.q)}</b><br><span class="mut">${esc(m.who)}:</span> <span style="color:var(--bad)">${m.j<0?"nevěděl":esc(m.x.o[m.j])}</span> · <span style="color:var(--ok)">správně ${esc(m.x.o[m.x.c])}</span><br><span class="mut">${esc(m.x.e)}</span></div>`).join("")}`:`<p style="margin-top:16px;font-weight:700">Bez chyby, výborně.</p>`;
+}
+function netPick(){
+  step(1);O.view="pick";tx({t:"pick"});
+  app.innerHTML=`<h2>Vyber kapitolu pro vás oba</h2><p class="mut">${esc(O.other)} zatím čeká.</p><p class="mut" style="font-weight:700;margin:12px 0 6px">Otázek pro každého</p>${perSeg()}${chapters(O.sec)}`;
+  app.querySelector("#per").onclick=e=>{const b=e.target.closest("button");if(b){cfg.per=O.per=+b.dataset.n;saveCfg();netPick()}};
+  app.querySelector("#chs").onclick=e=>{const b=e.target.closest(".ch");if(b){O.sec=cfg.sec=b.dataset.sec;saveCfg();sendCfg();netRead()}};
+}
+
+/* ---------- OBA U JEDNOHO ZAŘÍZENÍ ---------- */
+function setupOne(){
+  step(1);
+  app.innerHTML=modeBar()+`<div class="card"><h2>Kdo hraje</h2><div class="names"><div><label class="mut" for="na" style="font-weight:700">První</label><input type="text" id="na" value="${esc(cfg.a)}" maxlength="20"></div><div><label class="mut" for="nb" style="font-weight:700">Druhý</label><input type="text" id="nb" value="${esc(cfg.b)}" maxlength="20" placeholder="Spolužák"></div></div>
+  <p class="mut" style="font-weight:700;margin:16px 0 6px">Otázek pro každého</p>${perSeg()}</div>
+  <h2 style="margin-top:22px">Vyberte kapitolu</h2>${chapters(cfg.sec)}
+  <div class="row"><button class="btn" id="go" ${cfg.sec?"":"disabled style='opacity:.5'"}>Pokračovat${cfg.sec?": "+esc(SECN[cfg.sec]):""}</button></div>${logHtml()}`;
+  bindMode();
+  const keep=()=>{cfg.a=app.querySelector("#na").value.trim()||"Hráč 1";cfg.b=app.querySelector("#nb").value.trim()||"Hráč 2";saveCfg()};
+  app.querySelector("#per").onclick=e=>{const b=e.target.closest("button");if(b){keep();cfg.per=+b.dataset.n;saveCfg();setupOne()}};
+  app.querySelector("#chs").onclick=e=>{const b=e.target.closest(".ch");if(b){keep();cfg.sec=b.dataset.sec;saveCfg();setupOne();app.querySelector("#go").scrollIntoView({block:"center"})}};
   app.querySelector("#go").onclick=()=>{keep();read()};
 }
 function read(){
   step(2);
   app.innerHTML=`<div class="card"><p class="mut" style="font-weight:700;margin:0">Kapitola</p><h2>${esc(SECN[cfg.sec])}</h2>
-  <p>Oba si teď kapitolu přečtěte. Nejlíp každý na svém zařízení, nebo jeden předčítá nahlas. Počítejte 10–15 minut a dávejte pozor na čísla, výčty a rozdíly mezi pojmy, na to se ptají otázky.</p>
+  <p>Oba si teď kapitolu přečtěte, klidně jeden předčítá nahlas. Počítejte 10–15 minut a dávejte pozor na čísla, výčty a rozdíly mezi pojmy, na to se ptají otázky.</p>
   <div class="row"><a class="btn ghost" href="ucivo.html#${cfg.sec}" target="_blank" rel="noopener">Otevřít kapitolu v nové záložce</a><button class="btn" id="go">Máme přečteno, jdeme zkoušet</button></div>
   <div class="row"><button class="btn ghost" id="back">Zpět na výběr</button></div></div>`;
   app.querySelector("#go").onclick=start;app.querySelector("#back").onclick=setup;
 }
-function start(){
-  const pool=shuf(Q.filter(q=>q[5]===cfg.sec));
-  const need=cfg.per*2;
-  let list=pool.slice(0,need);
-  if(list.length<need){const sub=cfg.sec.slice(0,3).toUpperCase();list=list.concat(shuf(Q.filter(q=>q[0]===sub&&q[5]!==cfg.sec)).slice(0,need-list.length))}
-  G={qs:list.map(q=>{const idx=shuf([0,1,2,3]);return{q:q[1],o:idx.map(i=>q[2][i]),c:idx.indexOf(q[3]),e:q[4],sec:q[5]}}),i:0,sc:[0,0],miss:[]};
-  ask();
-}
+function start(){G={qs:pickList(cfg.sec,cfg.per).map(expand),i:0,sc:[0,0],miss:[]};ask()}
 function ask(){
   step(3);
   const x=G.qs[G.i],turn=G.i%2,ex=turn===0?cfg.a:cfg.b,an=turn===0?cfg.b:cfg.a;
@@ -104,17 +301,24 @@ function judge(j){
   const b=app.querySelector("#nx");b.focus();b.onclick=()=>{G.i++;G.i>=G.qs.length?result():ask()};
 }
 function result(){
-  step(4);hist[cfg.sec]=1;store("duo_hist",hist);
-  try{const rd=store("pp_read")||{};rd[cfg.sec]=true;store("pp_read",rd)}catch(e){}
-  const n=cfg.per;
-  app.innerHTML=`<div class="card"><h2>${esc(SECN[cfg.sec])}: výsledek</h2><div class="score"><div><span class="mut" style="font-weight:700">${esc(cfg.a)}</span><b>${G.sc[0]}/${Math.ceil(G.qs.length/2)}</b></div><div><span class="mut" style="font-weight:700">${esc(cfg.b)}</span><b>${G.sc[1]}/${Math.floor(G.qs.length/2)}</b></div></div>
-  ${G.miss.length?`<h2 style="margin-top:20px">Na tohle se podívejte znovu</h2>${G.miss.map(m=>`<div class="miss"><b>${esc(m.x.q)}</b><br><span class="mut">${esc(m.who)}:</span> <span style="color:var(--bad)">${m.j<0?"nevěděl":esc(m.x.o[m.j])}</span> · <span style="color:var(--ok)">správně ${esc(m.x.o[m.x.c])}</span><br><span class="mut">${esc(m.x.e)}</span></div>`).join("")}`:`<p style="margin-top:16px;font-weight:700">Bez chyby, výborně.</p>`}
+  step(4);const n=G.qs.length/2;
+  logRound(cfg.sec,cfg.a,cfg.b,G.sc[0],G.sc[1],n);
+  app.innerHTML=`<div class="card"><h2>${esc(SECN[cfg.sec])}: výsledek</h2><div class="score"><div><span class="mut" style="font-weight:700">${esc(cfg.a)}</span><b>${G.sc[0]}/${n}</b></div><div><span class="mut" style="font-weight:700">${esc(cfg.b)}</span><b>${G.sc[1]}/${n}</b></div></div>
+  ${missHtml(G.miss)}
   <p style="margin-top:18px">Teď to hned protrénujte: každý si dá kvíz z téhle kapitoly na svém zařízení, nebo si spolu zahrajte hru.</p>
   <div class="row"><a class="btn" href="trenink.html#sec-${cfg.sec}">Protrénovat kapitolu</a><a class="btn ghost" href="hra.html">Zahrát hru</a><button class="btn ghost" id="again">Znovu jiné otázky</button><button class="btn ghost" id="other">Jiná kapitola</button></div></div>`;
   app.querySelector("#again").onclick=start;app.querySelector("#other").onclick=setup;
 }
-const h=location.hash.slice(1);
-if(SECN[h]){cfg.sec=h;store("duo_cfg",cfg);if(cfg.b)read();else setup()}else setup();
-window.addEventListener("hashchange",()=>{const k=location.hash.slice(1);if(SECN[k]){cfg.sec=k;setup()}});
+
+/* ---------- start ---------- */
+function route(){
+  const h=location.hash.slice(1),m=h.match(/^duo-(\d{6})$/);
+  if(m){stopNet();cfg.mode="net";saveCfg();return setupNet(m[1])}
+  if(SECN[h]){cfg.sec=h;saveCfg()}
+  if(O)return;setup();
+}
+route();
+window.addEventListener("hashchange",route);
+window.addEventListener("pagehide",()=>{if(O){tx({t:"bye"});O.closing=true}});
 }
 </script></body></html>
