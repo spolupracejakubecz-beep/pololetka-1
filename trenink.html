@@ -26,6 +26,10 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}.opt.ok b{background:var(--ok);color:#fff}
 .opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}.opt.bad b{background:var(--bad);color:#fff}
 .opt:disabled{cursor:default}
+.opt.sel{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}.opt.sel b{background:var(--acc);color:#fff}
+.opt.miss{border-style:dashed}
+.multi{font:600 13px sans-serif;color:var(--mut,#666);margin:-4px 0 12px}
+.zt{display:inline-block;font:600 12px sans-serif;color:#7a4b00;background:#ffe9b8;border-radius:6px;padding:2px 8px;margin-left:6px}
 .expl{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--bg);display:none}.expl.on{display:block}
 .expl strong{display:block;margin-bottom:2px}
 .next{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
@@ -87,14 +91,19 @@ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const $=id=>document.getElementById(id);
 const stage=$("stage");
-const ALLQ=Q.map((q,k)=>({k,s:q[0],q:q[1],o:q[2],c:q[3],e:q[4],sec:q[5]}));
+const ALLQ=Q.map((q,k)=>({k,s:q[0],q:q[1],o:q[2],c:q[3],e:q[4],sec:q[5],t:q[6]||0,m:Array.isArray(q[3])}));
+// správné indexy jako pole (i u jedné správné odpovědi)
+const rights=x=>x.m?x.c:[x.c];
+const rightText=x=>rights(x).map(i=>x.o[i]).join(" · ");
+const isTF=x=>x.o.length===2&&x.o[0]==="Pravda";
+function mix(x){if(isTF(x))return {...x};const idx=shuf(x.o.map((_,i)=>i));const o=idx.map(i=>x.o[i]);return {...x,o,c:x.m?x.c.map(i=>idx.indexOf(i)).sort((a,b)=>a-b):idx.indexOf(x.c)}}
 const subjOf=sec=>sec.slice(0,3).toUpperCase();
 const inScope=x=>st.cat==="sec"?x.sec===st.sec:(st.subj==="ALL"||x.s===st.subj);
 const wrongCount=()=>ALLQ.filter(x=>wrong.has(x.k)&&inScope(x)).length;
 const readMap=()=>{try{return JSON.parse(localStorage.getItem("pp_read")||"{}")}catch(e){return{}}};
 function chapterCards(sec){
   const own=C.filter(c=>c[3]===sec).map(c=>({s:c[0],f:c[1],b:c[2]}));
-  const fromQ=ALLQ.filter(x=>x.sec===sec).map(x=>({s:x.s,f:x.q,b:"<b>"+esc(x.o[x.c])+"</b><br>"+esc(x.e),html:1}));
+  const fromQ=ALLQ.filter(x=>x.sec===sec).map(x=>({s:x.s,f:x.q,b:"<b>"+esc(rightText(x))+"</b><br>"+esc(x.e),html:1}));
   return shuf(own).concat(shuf(fromQ));
 }
 function build(){
@@ -103,9 +112,9 @@ function build(){
   if(st.mode!=="cards"){
     let src=ALLQ.filter(inScope);
     if(st.wr)src=src.filter(x=>wrong.has(x.k));
-    if(st.mode==="exam"&&!st.wr&&st.cat==="subj")src=st.subj==="ALL"?["EKO","PRA","UCE"].flatMap(x=>shuf(src.filter(y=>y.s===x)).slice(0,10)):shuf(src).slice(0,30);
+    if(st.mode==="exam"&&!st.wr)src=st.cat==="sec"?shuf(src).slice(0,20):st.subj==="ALL"?["EKO","PRA","UCE"].flatMap(x=>shuf(src.filter(y=>y.s===x)).slice(0,10)):shuf(src).slice(0,30);
     st.log=[];
-    st.list=shuf(src).map(x=>{const idx=shuf([0,1,2,3]);return {...x,o:idx.map(i=>x.o[i]),c:idx.indexOf(x.c)}});
+    st.list=shuf(src).map(mix);st.sel=[];
   }else{
     st.list=st.cat==="sec"?chapterCards(st.sec):shuf(C.filter(c=>st.subj==="ALL"||c[0]===st.subj).map(c=>({s:c[0],f:c[1],b:c[2]})));
   }
@@ -146,7 +155,8 @@ function render(){
   $("pos").textContent=lbl+(st.i+1)+" / "+n;
   if(st.mode!=="cards"){
     $("score").textContent=st.mode==="exam"&&!st.wr?"Výsledek až na konci":"Správně "+st.ok+" z "+st.done;
-    stage.innerHTML='<div class="card"><span class="tag">'+(st.cat==="sec"?esc(SECN[x.sec]):NAME[x.s])+'</span><p class="q">'+esc(x.q)+'</p><div class="opts">'+x.o.map((o,j)=>'<button class="opt" data-j="'+j+'"><b>'+(j+1)+'</b><span>'+esc(o)+'</span></button>').join("")+'</div><div class="expl" id="ex"></div><div class="next" id="nx"></div></div>';
+    st.sel=[];
+    stage.innerHTML='<div class="card"><span class="tag">'+(st.cat==="sec"?esc(SECN[x.sec]):NAME[x.s])+'</span>'+(x.t?'<span class="zt">ze zkušebního testu</span>':'')+'<p class="q">'+esc(x.q)+'</p>'+(x.m?'<p class="multi">Označ všechny správné odpovědi a dej Potvrdit.</p>':'')+'<div class="opts">'+x.o.map((o,j)=>'<button class="opt" data-j="'+j+'"><b>'+(j+1)+'</b><span>'+esc(o)+'</span></button>').join("")+'</div><div class="expl" id="ex"></div><div class="next" id="nx">'+(x.m?'<button class="btn" id="chk">Potvrdit</button>':'')+'</div></div>';
   }else{
     $("score").textContent="Umím "+st.known;
     const back=x.html?x.b:esc(x.b);
@@ -154,12 +164,14 @@ function render(){
   }
 }
 function answer(j){
-  if(st.ans)return;st.ans=true;const x=st.list[st.i],good=j===x.c;st.done++;
+  if(st.ans)return;const x=st.list[st.i];
+  if(x.m&&!Array.isArray(j)){const p=st.sel.indexOf(j);if(p<0)st.sel.push(j);else st.sel.splice(p,1);stage.querySelectorAll(".opt").forEach((b,k)=>b.classList.toggle("sel",st.sel.includes(k)));return}
+  st.ans=true;const R=rights(x),pick=Array.isArray(j)?j.slice().sort((a,b)=>a-b):[j],good=pick.length===R.length&&pick.every((v,i)=>v===R[i]);st.done++;
   if(good){st.ok++;wrong.delete(x.k)}else{wrong.add(x.k)}save();
   try{const S=JSON.parse(localStorage.getItem("pp_stats")||"{}");(S[x.s]=S[x.s]||[]).push(good?1:0);S[x.s]=S[x.s].slice(-200);localStorage.setItem("pp_stats",JSON.stringify(S))}catch(e){}
-  if(st.mode==="exam"&&!st.wr){st.log.push({x,j,good});stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===j)b.style.borderColor="var(--ink)"});setTimeout(next,250);return}
-  stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===x.c)b.classList.add("ok");else if(k===j)b.classList.add("bad")});
-  const ex=$("ex");ex.classList.add("on");ex.innerHTML='<strong style="color:'+(good?"var(--ok)":"var(--bad)")+'">'+(good?"Správně.":"Správně je: "+esc(x.o[x.c]))+'</strong>'+esc(x.e);
+  if(st.mode==="exam"&&!st.wr){st.log.push({x,j:pick,good});stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(pick.includes(k))b.style.borderColor="var(--ink)"});setTimeout(next,250);return}
+  stage.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;b.classList.remove("sel");if(R.includes(k)){b.classList.add("ok");if(!pick.includes(k))b.classList.add("miss")}else if(pick.includes(k))b.classList.add("bad")});
+  const ex=$("ex");ex.classList.add("on");ex.innerHTML='<strong style="color:'+(good?"var(--ok)":"var(--bad)")+'">'+(good?"Správně.":(x.m?"Správně jsou: ":"Správně je: ")+esc(rightText(x)))+'</strong>'+esc(x.e);
   $("nx").innerHTML='<button class="btn" id="go">Další otázka</button>';$("go").focus();
   $("score").textContent="Správně "+st.ok+" z "+st.done;pressed();
 }
@@ -173,7 +185,7 @@ function finish(){
     const p=st.done?Math.round(st.ok/st.done*100):0;
     const by=st.cat==="subj"?["EKO","PRA","UCE"].map(s=>{const a=st.log.filter(l=>l.x.s===s);return a.length?'<div style="display:flex;justify-content:space-between;font-weight:700;padding:4px 0"><span>'+NAME[s]+'</span><span>'+a.filter(l=>l.good).length+' / '+a.length+'</span></div>':""}).join(""):"";
     const bad=st.log.filter(l=>!l.good);
-    stage.innerHTML='<div class="card"><p class="sub" style="margin:0">Zkouška nanečisto'+where+'</p><p class="big">'+p+' %</p><p>'+st.ok+' z '+st.done+' správně → známka <strong>'+grade(p)+'</strong>.</p>'+by+(bad.length?'<h2 style="margin-top:18px">Co si zopakovat</h2>'+bad.map(l=>'<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>'+esc(l.x.q)+'</b><br><span style="color:var(--bad)">Tvoje: '+esc(l.x.o[l.j]??"–")+'</span><br><span style="color:var(--ok)">Správně: '+esc(l.x.o[l.x.c])+'</span><br><span class="mut">'+esc(l.x.e)+'</span></div>').join(""):"")+'<div class="next"><button class="btn" id="again">Nová zkouška</button>'+(bad.length?'<button class="btn ghost" id="wr">Projet chyby v kvízu</button>':'')+'</div></div>';
+    stage.innerHTML='<div class="card"><p class="sub" style="margin:0">Zkouška nanečisto'+where+'</p><p class="big">'+p+' %</p><p>'+st.ok+' z '+st.done+' správně → známka <strong>'+grade(p)+'</strong>.</p>'+by+(bad.length?'<h2 style="margin-top:18px">Co si zopakovat</h2>'+bad.map(l=>'<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>'+esc(l.x.q)+'</b><br><span style="color:var(--bad)">Tvoje: '+esc(l.j.map(i=>l.x.o[i]).join(" · ")||"–")+'</span><br><span style="color:var(--ok)">Správně: '+esc(rightText(l.x))+'</span><br><span class="mut">'+esc(l.x.e)+'</span></div>').join(""):"")+'<div class="next"><button class="btn" id="again">Nová zkouška</button>'+(bad.length?'<button class="btn ghost" id="wr">Projet chyby v kvízu</button>':'')+'</div></div>';
   }else if(st.mode==="quiz"||st.wr){
     const p=st.done?Math.round(st.ok/st.done*100):0,n=wrongCount();
     stage.innerHTML='<div class="card"><p class="sub" style="margin:0">Hotovo'+(st.wr?" · moje chyby":"")+'</p><p class="big">'+p+' %</p><p>'+st.ok+' z '+st.done+' správně. Podle školní stupnice by to byla <strong>'+grade(p)+'</strong>.</p><div class="next"><button class="btn" id="again">Znovu</button>'+(n?'<button class="btn ghost" id="wr">Projet chyby'+where+' ('+n+')</button>':'')+(st.cat==="sec"&&!st.wr?'<button class="btn ghost" id="ex2">Zkouška nanečisto z kapitoly</button>':'')+'</div></div>';
@@ -188,6 +200,7 @@ function finish(){
 }
 stage.addEventListener("click",e=>{
   const o=e.target.closest(".opt");if(o)return answer(+o.dataset.j);
+  if(e.target.id==="chk")return answer(st.sel.slice());
   if(e.target.id==="go")return next();
   const k=e.target.closest("[data-k]");if(k){if(k.dataset.k==="1")st.known++;else (st.rest=st.rest||[]).push(st.list[st.i]);return next()}
   if(e.target.closest("#fc")){st.flip=!st.flip;render()}
@@ -199,7 +212,7 @@ $("cat").onclick=e=>{const b=e.target.closest("button");if(!b)return;go(b.datase
 const go=h=>{if(location.hash===h)route();else location.hash=h};
 document.addEventListener("keydown",e=>{
   if(e.target.tagName==="INPUT"||!st.list.length||$("tools").hidden)return;
-  if(st.mode!=="cards"){if(!st.ans&&e.key>="1"&&e.key<="4"){e.preventDefault();answer(+e.key-1)}else if(st.ans&&e.key==="Enter"){e.preventDefault();next()}}
+  if(st.mode!=="cards"){const x=st.list[st.i];if(!st.ans&&x&&e.key>="1"&&e.key<="9"&&+e.key<=x.o.length){e.preventDefault();answer(+e.key-1)}else if(!st.ans&&x&&x.m&&e.key==="Enter"){e.preventDefault();answer(st.sel.slice())}else if(st.ans&&e.key==="Enter"){e.preventDefault();next()}}
   else if(e.key===" "){e.preventDefault();st.flip=!st.flip;render()}
 });
 function route(){

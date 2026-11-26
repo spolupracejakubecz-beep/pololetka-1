@@ -63,20 +63,21 @@ let cfg=Object.assign({a:"Honza",b:"",me:"",sec:"",per:5,mode:"net"},store("duo_
 if(!cfg.me)cfg.me=cfg.a||"";
 let G=null,O=null;
 const step=n=>document.querySelectorAll("#steps span").forEach((s,i)=>s.classList.toggle("on",i===n-1));
-const count=sec=>Q.filter(q=>q[5]===sec).length;
+const ok4=q=>!!q&&!Array.isArray(q[3])&&q[2].length===4; // ve dvou jen otázky se 4 možnostmi a jednou správnou
+const count=sec=>Q.filter(q=>q[5]===sec&&ok4(q)).length;
 const hist=store("duo_hist")||{};
 const saveCfg=()=>store("duo_cfg",cfg);
 
 /* ---------- společné ---------- */
 // otázky pro kolo: [{k, p}] – index do Q a pořadí možností
 function pickList(sec,per){
-  const need=per*2,ids=Q.map((q,k)=>k);
+  const need=per*2,ids=Q.map((q,k)=>k).filter(k=>ok4(Q[k]));
   let list=shuf(ids.filter(k=>Q[k][5]===sec)).slice(0,need);
   if(list.length<need){const sub=sec.slice(0,3).toUpperCase();list=list.concat(shuf(ids.filter(k=>Q[k][0]===sub&&Q[k][5]!==sec)).slice(0,need-list.length))}
   return list.map(k=>({k,p:shuf([0,1,2,3])}));
 }
 function expand(it){
-  const q=Q[it.k];if(!q)return null;
+  const q=Q[it.k];if(!ok4(q))return null;
   const p=Array.isArray(it.p)&&it.p.length===4&&[0,1,2,3].every(n=>it.p.includes(n))?it.p:[0,1,2,3];
   return{k:it.k,s:q[0],q:q[1],o:p.map(i=>q[2][i]),c:p.indexOf(q[3]),e:q[4],sec:q[5]};
 }
