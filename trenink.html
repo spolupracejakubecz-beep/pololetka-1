@@ -84,7 +84,7 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 const Q=window.Q,C=window.C,SECN=window.SECN;
 const COL={EKO:"#0d7680",PRA:"#990f3d",UCE:"#3d4db7"},NAME={EKO:"Ekonomika",PRA:"Právo",UCE:"Účetnictví"};
 // st.cat: "sec" (kapitola) | "subj" (celé předměty) | "hod" (test z hodiny – příznak 2); st.wr = jen moje chyby
-let st={cat:"sec",sec:"",subj:"ALL",mode:"quiz",wr:false,list:[],i:0,ok:0,done:0,ans:false,flip:false,known:0};
+let st={hs:"UCE",cat:"sec",sec:"",subj:"ALL",mode:"quiz",wr:false,list:[],i:0,ok:0,done:0,ans:false,flip:false,known:0};
 let wrong=new Set();try{wrong=new Set(JSON.parse(localStorage.getItem("pp_wrong")||"[]"))}catch(e){}
 const save=()=>{try{localStorage.setItem("pp_wrong",JSON.stringify([...wrong]))}catch(e){}};
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -98,7 +98,7 @@ const rightText=x=>rights(x).map(i=>x.o[i]).join(" · ");
 const isTF=x=>x.o.length===2&&x.o[0]==="Pravda";
 function mix(x){if(isTF(x))return {...x};const idx=shuf(x.o.map((_,i)=>i));const o=idx.map(i=>x.o[i]);return {...x,o,c:x.m?x.c.map(i=>idx.indexOf(i)).sort((a,b)=>a-b):idx.indexOf(x.c)}}
 const subjOf=sec=>sec.slice(0,3).toUpperCase();
-const inScope=x=>st.cat==="hod"?x.t===2:st.cat==="sec"?x.sec===st.sec:(st.subj==="ALL"||x.s===st.subj);
+const inScope=x=>st.cat==="hod"?x.t===2&&x.s===st.hs:st.cat==="sec"?x.sec===st.sec:(st.subj==="ALL"||x.s===st.subj);
 const wrongCount=()=>ALLQ.filter(x=>wrong.has(x.k)&&inScope(x)).length;
 const readMap=()=>{try{return JSON.parse(localStorage.getItem("pp_read")||"{}")}catch(e){return{}}};
 function chapterCards(sec){
@@ -116,7 +116,7 @@ function build(){
     st.log=[];
     st.list=shuf(src).map(mix);st.sel=[];
   }else{
-    st.list=st.cat==="hod"?shuf(ALLQ.filter(x=>x.t===2).map(x=>({s:x.s,f:x.q,b:"<b>"+esc(rightText(x))+"</b><br>"+esc(x.e),html:1}))):st.cat==="sec"?chapterCards(st.sec):shuf(C.filter(c=>st.subj==="ALL"||c[0]===st.subj).map(c=>({s:c[0],f:c[1],b:c[2]})));
+    st.list=st.cat==="hod"?shuf(ALLQ.filter(x=>x.t===2&&x.s===st.hs).map(x=>({s:x.s,f:x.q,b:"<b>"+esc(rightText(x))+"</b><br>"+esc(x.e),html:1}))):st.cat==="sec"?chapterCards(st.sec):shuf(C.filter(c=>st.subj==="ALL"||c[0]===st.subj).map(c=>({s:c[0],f:c[1],b:c[2]})));
   }
   st.i=0;st.ok=0;st.done=0;st.ans=false;st.flip=false;st.known=0;render();
 }
@@ -133,7 +133,9 @@ function header(){
     const g=subjOf(st.sec);
     $("top").innerHTML='<div class="chead"><div><span class="pill '+g+'">'+NAME[g]+'</span><h2>'+esc(SECN[st.sec])+'</h2></div><div class="links"><a href="#kapitoly">Jiná kapitola</a><a href="ucivo.html#'+st.sec+'">Přečíst</a><a href="dvojice.html#'+st.sec+'">Ve dvou</a></div></div>';
   }else if(st.cat==="hod"){
-    $("top").innerHTML='<div class="chead"><div><span class="pill UCE">Účetnictví</span><h2>Test z hodiny</h2><p class="mut" style="margin:6px 0 0">Otázky z testu „UČE 1.P – test za 1. pololetí“ ('+ALLQ.filter(x=>x.t===2).length+' otázek). Přiřazovací úlohy jsou rozepsané po řádcích. Zkouška = 20 náhodných jako ve škole.</p></div></div>';
+    const SRC={UCE:"„UČE 1.P – test za 1. pololetí“",PRA:"z Moodlu: základní právní pojmy + ústavní právo, soudnictví (oficiální řešení)"};
+    const subs=["UCE","PRA","EKO"].filter(s=>ALLQ.some(x=>x.t===2&&x.s===s));
+    $("top").innerHTML='<div class="chead"><div><h2>Test z hodiny</h2><div class="bar" style="margin:10px 0 0">'+subs.map(s=>'<a class="btn'+(s===st.hs?'':' ghost')+'" style="text-decoration:none" href="#hodina-'+s+'">'+NAME[s]+'</a>').join("")+'</div><p class="mut" style="margin:10px 0 0">Otázky '+SRC[st.hs]+' ('+ALLQ.filter(x=>x.t===2&&x.s===st.hs).length+' otázek). Přiřazovací úlohy jsou rozepsané po řádcích. Zkouška = 20 náhodných.</p></div></div>';
   }else $("top").innerHTML="";
 }
 function pressed(){
@@ -181,7 +183,7 @@ function next(){st.i++;st.ans=false;st.flip=false;render()}
 const grade=p=>p>=90?1:p>=75?2:p>=60?3:p>=45?4:5;
 function toWrong(){st.mode="quiz";st.wr=true;build()}
 function finish(){
-  document.documentElement.style.setProperty("--acc",st.cat==="sec"?COL[subjOf(st.sec)]:st.cat==="hod"?COL.UCE:"#0d7680");
+  document.documentElement.style.setProperty("--acc",st.cat==="sec"?COL[subjOf(st.sec)]:st.cat==="hod"?COL[st.hs]:"#0d7680");
   const where=st.cat==="hod"?" z testu z hodiny":st.cat==="sec"?" z kapitoly":"";
   if(st.mode==="exam"&&!st.wr){
     const p=st.done?Math.round(st.ok/st.done*100):0;
@@ -226,6 +228,7 @@ function route(){
   else if(h==="WRONG"){st.cat="subj";st.subj="ALL";st.mode="quiz";st.wr=true}
   else if(h==="EXAM"){st.cat="subj";st.subj="ALL";st.mode="exam"}
   else if(h==="hodina"){st.cat="hod";st.mode="quiz"}
+  else if(/^hodina-(UCE|PRA|EKO)$/.test(h)){st.cat="hod";st.hs=h.slice(7);st.mode="quiz"}
   else if(h==="hodina-zkouska"){st.cat="hod";st.mode="exam"}
   else if(h==="karticky"){st.cat="subj";st.mode="cards"}
   for(const b of document.querySelectorAll("#cat button"))b.setAttribute("aria-pressed",b.dataset.c===st.cat);
